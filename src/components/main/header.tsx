@@ -15,7 +15,6 @@ import {
   Pill,
   UserCircle,
   Menu,
-  LogOut,
   ShoppingBag,
 } from "lucide-react"; // Import icons
 import { cn } from "@/lib/utils";
@@ -25,7 +24,7 @@ export default function Header() {
   const pathname = usePathname();
 
   const navItems = [
-    { name: "Dashboard", href: "/", icon: LayoutDashboard },
+    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Products", href: "/admin/products", icon: Pill },
     { name: "Users", href: "/admin/users", icon: UserCircle },
     { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
