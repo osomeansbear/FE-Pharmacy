@@ -1,4 +1,89 @@
 "use client";
-export default function NavBar() {
-  return <div>NavBar</div>;
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  House,
+  LogIn,
+  MessageSquare,
+  Pill,
+  PillBottle,
+  ShoppingCart,
+  UserPlus,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+export default function Navbar() {
+  const pathname = usePathname();
+
+  const navLinks = [
+    { name: "Home", href: "/", icon: House },
+    { name: "Shop", href: "/shop", icon: PillBottle },
+    { name: "AI Assistant", href: "/ai-assistant", icon: MessageSquare },
+  ];
+
+  return (
+    <nav className="w-full bg-white text-success flex justify-between items-center px-6 md:px-20 lg:px-32 py-4 border-b border-gray-500 sticky top-0 z-50">
+      {/* Brand Logo */}
+      <div className="flex-shrink-0">
+        <Link
+          href="/"
+          className="flex items-center gap-2 transition-opacity hover:opacity-80"
+        >
+          <Pill className="size-7 fill-success/10" />
+          <span className="text-2xl font-bold tracking-tight">PharmaCore</span>
+        </Link>
+      </div>
+
+      {/* Navigation Links */}
+      <div className="hidden md:flex items-center gap-16">
+        {navLinks.map((link) => {
+          const Icon = link.icon;
+          const isActive = pathname === link.href;
+
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "flex items-center gap-2 text-md font-medium transition-colors hover:text-success/70",
+                isActive ? "text-success" : "text-slate-600"
+              )}
+            >
+              <Icon className={cn("size-4", isActive && "stroke-[2.5px]")} />
+              {link.name}
+              {isActive && (
+                <span className="absolute -bottom-[21px] h-1 w-full bg-success rounded-t-full" />
+              )}
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex items-center gap-4">
+        <Link href="/cart">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative hover:bg-success/5 text-success"
+          >
+            <ShoppingCart className="size-5" />
+            <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+              0
+            </span>
+          </Button>
+        </Link>
+
+        <div className="flex items-center gap-2">
+          <Link href="/register">
+            <Button className="bg-success hover:bg-success/90 rounded-full text-white text-md gap-2">
+              <UserPlus className="size-4" /> Register
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </nav>
+  );
 }

@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import "../globals.css";
+import Navbar from "../../components/main/navbar";
 import Header from "../../components/main/header";
 
 export const metadata: Metadata = {
-  title: "Admin Panel",
-  description: "Admin section of the application",
+  title: "User Interface",
+  description: "User section of the application",
 };
 
-export default function AdminLayout({
+export default function UserLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -15,8 +16,8 @@ export default function AdminLayout({
   return (
     <html lang="en">
       <body>
-        <div className="w-full">
-          <Header />
+        <div>
+          <Navbar />
 
           {children}
         </div>

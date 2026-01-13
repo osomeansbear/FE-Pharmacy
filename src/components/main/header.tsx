@@ -7,7 +7,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Button } from "../ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -42,7 +41,10 @@ export default function Header() {
           >
             <div className="flex flex-col">
               <SheetHeader className="border-b-1 border-black">
-                <SheetTitle className="px-4">PharmaCore</SheetTitle>
+                <SheetTitle className="px-4 flex items-center gap-2 text-success">
+                  <Pill className="size-6" />
+                  <p className="text-xl">PharmaCore</p>
+                </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col px-4 mt-4 gap-2">
                 {navItems.map((item) => {
