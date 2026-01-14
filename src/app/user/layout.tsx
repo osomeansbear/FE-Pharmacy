@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "../globals.css";
 import Navbar from "../../components/main/navbar";
 import Header from "../../components/main/header";
+import Footer from "@/components/main/footer";
 
 export const metadata: Metadata = {
   title: "User Interface",
@@ -18,8 +19,8 @@ export default function UserLayout({
       <body>
         <div>
           <Navbar />
-
           {children}
+          <Footer />
         </div>
       </body>
     </html>

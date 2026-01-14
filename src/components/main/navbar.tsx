@@ -18,9 +18,9 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const navLinks = [
-    { name: "Home", href: "/", icon: House },
-    { name: "Shop", href: "/shop", icon: PillBottle },
-    { name: "AI Assistant", href: "/ai-assistant", icon: MessageSquare },
+    { name: "Home", href: "/user", icon: House },
+    { name: "Shop", href: "/user/shop", icon: PillBottle },
+    { name: "AI Assistant", href: "/user/ai-assistant", icon: MessageSquare },
   ];
 
   return (
@@ -28,7 +28,7 @@ export default function Navbar() {
       {/* Brand Logo */}
       <div className="flex-shrink-0">
         <Link
-          href="/"
+          href="/user"
           className="flex items-center gap-2 transition-opacity hover:opacity-80"
         >
           <Pill className="size-7 fill-success/10" />
@@ -47,14 +47,14 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               className={cn(
-                "flex items-center gap-2 text-md font-medium transition-colors hover:text-success/70",
+                "relative flex items-center gap-2 text-md font-medium transition-colors hover:text-success/70",
                 isActive ? "text-success" : "text-slate-600"
               )}
             >
               <Icon className={cn("size-4", isActive && "stroke-[2.5px]")} />
               {link.name}
               {isActive && (
-                <span className="absolute -bottom-[21px] h-1 w-full bg-success rounded-t-full" />
+                <span className="absolute -bottom-1 left-0 w-full h-[2px] bg-success rounded-full" />
               )}
             </Link>
           );
