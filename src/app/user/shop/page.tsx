@@ -4,15 +4,24 @@ import { useState, useMemo, useEffect } from "react";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import axiosInstance from "../../../../config/axios";
+import apiEndpoints from "../../../../api/apiEndpoints";
 
 // --- MOCK DATA ---
-const categories = [
-  "All Products",
-  "Pain Relief",
-  "Cold & Flu",
-  "Vitamins",
-  "First Aid",
-];
+// const categories = [
+//   "All Products",
+//   "Pain Relief",
+//   "Cold & Flu",
+//   "Vitamins",
+//   "First Aid",
+// ];
+
+interface Category {
+  id: number;
+  name: string;
+  description?: string;
+  created_at?: string;
+}
 
 const products = [
   {
@@ -92,9 +101,21 @@ const products = [
 export default function ShopPage() {
   // --- STATE ---
   const [activeCategory, setActiveCategory] = useState("All Products");
+  const [categories, setCategories] = useState<Category[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
+  const fetchAllCategories = async () => {
+    try {
+      const data = await axiosInstance.get<any, Category[]>(
+        apiEndpoints.category.getAllCategories
+      );
+
+      setCategories(data);
+    } catch (error) {
+      console.error("Lỗi:", error);
+    }
+  };
   // --- FILTERING ---
   const filteredProducts = useMemo(() => {
     if (activeCategory === "All Products") return products;
@@ -103,6 +124,7 @@ export default function ShopPage() {
 
   // Reset to page 1 when category changes
   useEffect(() => {
+    fetchAllCategories();
     setCurrentPage(1);
   }, [activeCategory]);
 
@@ -121,17 +143,17 @@ export default function ShopPage() {
             <h2 className="font-bold text-lg mb-4 px-2">Categories</h2>
             <ul className="space-y-2">
               {categories.map((cat) => (
-                <li key={cat}>
+                <li key={cat.id}>
                   <button
-                    onClick={() => setActiveCategory(cat)}
+                    onClick={() => setActiveCategory(cat.name)}
                     className={cn(
-                      "w-full text-left px-4 py-2.5 rounded-lg font-medium transition-colors",
-                      activeCategory === cat
-                        ? "bg-green-800 text-white"
-                        : "text-slate-600 hover:bg-slate-100"
+                      "w-full text-left px-4 py-2.5 rounded-lg font-medium transition-colors"
+                      // activeCategory === cat
+                      //   ? "bg-green-800 text-white"
+                      //   : "text-slate-600 hover:bg-slate-100"
                     )}
                   >
-                    {cat}
+                    {cat.name}
                   </button>
                 </li>
               ))}
