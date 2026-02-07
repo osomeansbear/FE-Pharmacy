@@ -1,34 +1,43 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   House,
-  LogIn,
   MessageSquare,
   Pill,
   PillBottle,
   ShoppingCart,
   UserPlus,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "../../../stores/authStore";
 
 export default function Navbar() {
   const pathname = usePathname();
-
+  const router = useRouter();
+  const logout = useAuthStore((s) => s.logout);
+  const user = useAuthStore((s) => s.user);
+  const isLoggedIn = useAuthStore((s) => s.isAuthenticated);
   const navLinks = [
-    { name: "Home", href: "/user", icon: House },
-    { name: "Shop", href: "/user/shop", icon: PillBottle },
-    { name: "AI Assistant", href: "/user/ai-assistant", icon: MessageSquare },
+    { name: "Home", href: "/shop", icon: House },
+    { name: "Products", href: "/products", icon: PillBottle },
+    { name: "AI Assistant", href: "/ai-assistant", icon: MessageSquare },
   ];
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
+
+  if (!user) return <div>Loading...</div>;
 
   return (
     <nav className="w-full bg-white text-success flex justify-between items-center px-6 md:px-20 lg:px-32 py-4 border-b border-gray-500 sticky top-0 z-50">
       {/* Brand Logo */}
       <div className="flex-shrink-0">
         <Link
-          href="/user"
+          href="/shop"
           className="flex items-center gap-2 transition-opacity hover:opacity-80"
         >
           <Pill className="size-7 fill-success/10" />
@@ -48,7 +57,7 @@ export default function Navbar() {
               href={link.href}
               className={cn(
                 "relative flex items-center gap-2 text-md font-medium transition-colors hover:text-success/70",
-                isActive ? "text-success" : "text-slate-600"
+                isActive ? "text-success" : "text-slate-600",
               )}
             >
               <Icon className={cn("size-4", isActive && "stroke-[2.5px]")} />
@@ -63,7 +72,7 @@ export default function Navbar() {
 
       {/* Action Buttons */}
       <div className="flex items-center gap-4">
-        <Link href="/cart">
+        <Link href="/users/cart">
           <Button
             variant="ghost"
             size="icon"
@@ -77,11 +86,20 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-2">
-          <Link href="/register">
-            <Button className="bg-success hover:bg-success/90 rounded-full text-white text-md gap-2">
-              <UserPlus className="size-4" /> Register
-            </Button>
-          </Link>
+          {isLoggedIn ? (
+            <div>
+              <Link href="/users/profile">{user.fullName}</Link>
+            </div>
+          ) : (
+            <Link href="/register">
+              <Button
+                className="bg-success hover:bg-success/90 rounded-full text-white text-md gap-2"
+                onClick={handleLogout}
+              >
+                <UserPlus className="size-4" /> Register
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </nav>

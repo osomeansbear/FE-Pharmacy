@@ -1,15 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { Bot, Send } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Bot, Send } from "lucide-react";
+import { useState } from "react";
 
 // Define a type for your messages if you plan to make this dynamic later
-type Message = {
-  role: "assistant" | "user";
-  content: string;
-};
 
 export default function ChatPage() {
   const [input, setInput] = useState<string>("");
@@ -29,14 +25,14 @@ export default function ChatPage() {
   };
 
   return (
-    <div className=" flex flex-col h-[600px] w-full max-w-3xl mx-auto bg-white rounded-xl overflow-hidden shadow-xl font-sans border border-gray-200 my-8">
+    <div className=" flex flex-col h-[600px] w-full max-w-3xl mx-auto bg-white rounded-xl overflow-hidden shadow-xl border border-gray-200 my-8">
       {/* Header */}
-      <div className="bg-[#114232] p-4 text-white flex items-center gap-3 bg-gradient-to-r from-[#114232] to-[#2a7a63]">
-        <div className="p-1.5 bg-white/10 rounded-full">
+      <div className="bg-success p-4 text-white flex items-center gap-3">
+        <div className="p-1.5 rounded-full">
           <Bot className="h-6 w-6" />
         </div>
         <div>
-          <h1 className="font-semibold text-lg">MediGenius Assistant</h1>
+          <h1 className="font-semibold text-lg">Pharma Assistant</h1>
           <p className="text-xs opacity-80">
             Always verify with a professional.
           </p>
@@ -47,7 +43,7 @@ export default function ChatPage() {
       <div className="flex-1 p-6 bg-gray-50 overflow-y-auto">
         {/* Assistant Welcome Message */}
         <div className="flex items-start gap-3 max-w-[85%]">
-          <div className="p-2 bg-[#114232] rounded-full text-white flex-shrink-0">
+          <div className="p-2 bg-success rounded-full text-white flex-shrink-0">
             <Bot className="h-5 w-5" />
           </div>
           <div className="bg-white border border-gray-200 p-4 rounded-2xl rounded-tl-none text-sm text-gray-800 shadow-sm">
@@ -73,9 +69,9 @@ export default function ChatPage() {
           <Button
             size="icon"
             onClick={handleSend}
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-transparent hover:bg-gray-200 text-gray-400 hover:text-[#114232] transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-success justify-center"
           >
-            <Send className="h-5 w-5" />
+            <Send className="" />
           </Button>
         </div>
         <p className="text-center text-xs text-gray-400 mt-2">

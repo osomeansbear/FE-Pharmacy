@@ -1,7 +1,7 @@
+import Footer from "@/components/main/Footer";
+import Navbar from "@/components/main/Navbar";
 import type { Metadata } from "next";
 import "./globals.css";
-import NavBar from "../components/main/navbar";
-import Header from "../components/main/header";
 
 export const metadata: Metadata = {
   title: "Login Page",
@@ -16,7 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="w-full">{children}</div>
+        <div className="bg-muted/5">
+          <Navbar />
+          {children}
+          <Footer />
+        </div>
       </body>
     </html>
   );

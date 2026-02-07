@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import apiEndpoints from "../../../api/apiEndpoints";
 import axiosInstance from "../../../config/axios";
 
 export default function RegisterPage() {
-  const [name, setName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +21,7 @@ export default function RegisterPage() {
     setError("");
 
     // 1. Validate inputs
-    if (!name || !email || !phone || !password || !confirmPassword) {
+    if (!fullName || !email || !phone || !password || !confirmPassword) {
       setError("Please fill in all fields");
       return;
     }
@@ -39,15 +39,16 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      console.log("Register attempt:", { name, email, phone, password });
+      console.log("Register attempt:", { fullName, email, phone, password });
 
       // 3. Call API
       // Lưu ý: Thường backend không cần gửi lên confirmPassword
       const response = await axiosInstance.post(apiEndpoints.auth.register, {
-        name,
+        fullName,
         email,
         phone,
         password,
+        role: "PATIENT",
       });
 
       console.log("Registration successful:", response.data);
@@ -78,8 +79,8 @@ export default function RegisterPage() {
             <label className="block text-sm font-medium mb-1">Full Name</label>
             <input
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your full name"
             />
@@ -154,7 +155,7 @@ export default function RegisterPage() {
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
             Already have an account?{" "}
-            <a href="/auth/login" className="text-blue-500 hover:underline">
+            <a href="/login" className="text-blue-500 hover:underline">
               Login here
             </a>
           </p>

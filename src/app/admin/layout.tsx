@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import Header from "../../components/main/Header";
 import "../globals.css";
-import Header from "../../components/main/header";
 
 export const metadata: Metadata = {
   title: "Admin Panel",
@@ -15,7 +15,7 @@ export default function AdminLayout({
   return (
     <html lang="en">
       <body>
-        <div className="w-full">
+        <div className="min-w-screen min-h-screen ">
           <Header />
 
           {children}

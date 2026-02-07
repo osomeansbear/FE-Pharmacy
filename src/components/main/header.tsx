@@ -7,27 +7,33 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
-  Pill,
-  UserCircle,
   Menu,
+  Pill,
   ShoppingBag,
+  UserCircle,
 } from "lucide-react"; // Import icons
-import { cn } from "@/lib/utils";
-import LogoutButton from "./logout_button";
-
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "../../../stores/authStore";
+import LogoutButton from "./LogoutButton";
 export default function Header() {
   const pathname = usePathname();
-
+  const logout = useAuthStore((s) => s.logout);
+  const router = useRouter();
   const navItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Products", href: "/admin/products", icon: Pill },
     { name: "Users", href: "/admin/users", icon: UserCircle },
     { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
   ];
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
   return (
     <div className="w-full flex bg-white justify-between items-center px-4 py-2 border-b-1 border-black">
       <div>
@@ -59,7 +65,7 @@ export default function Header() {
                         "flex items-center gap-3 p-4 transition-all duration-200 hover:bg-gray-200 hover:rounded-xl active:bg-success group",
                         isActive
                           ? "bg-success text-white rounded-xl hover:bg-success"
-                          : "text-black "
+                          : "text-black ",
                       )}
                     >
                       <Icon
@@ -68,7 +74,7 @@ export default function Header() {
                           "transition-colors",
                           isActive
                             ? "text-white"
-                            : "text-black group-hover:text-slate-900"
+                            : "text-black group-hover:text-slate-900",
                         )}
                       />
                       <span className="font-medium text-sm">{item.name}</span>

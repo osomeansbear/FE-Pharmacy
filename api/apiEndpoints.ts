@@ -1,5 +1,3 @@
-import { register } from "module";
-
 const apiEndpoints = {
   // auth: {
   //   register: "/auth/register",
@@ -24,6 +22,9 @@ const apiEndpoints = {
   auth: {
     login: "auth/login",
     register: "auth/register",
+  },
+  product: {
+    getAllProducts: "products",
   },
 };
 

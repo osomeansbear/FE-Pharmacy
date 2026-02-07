@@ -1,8 +1,8 @@
 import axios, {
-  AxiosInstance,
   AxiosError,
-  InternalAxiosRequestConfig,
+  AxiosInstance,
   AxiosResponse,
+  InternalAxiosRequestConfig,
 } from "axios";
 // 1. Tạo Instance với cấu hình mặc định
 const axiosInstance: AxiosInstance = axios.create({
@@ -24,7 +24,7 @@ axiosInstance.interceptors.request.use(
   },
   (error: AxiosError) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // 3. Response Interceptor: Xử lý dữ liệu và lỗi tập trung
@@ -60,7 +60,7 @@ axiosInstance.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;
