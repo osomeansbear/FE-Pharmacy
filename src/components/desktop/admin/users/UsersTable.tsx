@@ -10,13 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Mail, Pencil, Search, Trash2, UserPlus, X } from "lucide-react";
+import { Mail, Pencil, Search, UserPlus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   fetchAllUsers,
   updateUserRole,
   updateUserStatus,
-  deleteUser,
 } from "../../../../../api/users.api";
 import { User, AppRole } from "../../../../../types/userTypes";
 
@@ -33,11 +32,6 @@ export default function UsersTable() {
   const [editRole, setEditRole] = useState<AppRole>("PATIENT");
   const [editIsActive, setEditIsActive] = useState(true);
   const [editLoading, setEditLoading] = useState(false);
-
-  // Delete confirmation state
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deletingUser, setDeletingUser] = useState<User | null>(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const loadUsers = async () => {
     try {
@@ -91,27 +85,6 @@ export default function UsersTable() {
       console.error("Error updating user:", error);
     } finally {
       setEditLoading(false);
-    }
-  };
-
-  // Delete handlers
-  const handleDeleteClick = (user: User) => {
-    setDeletingUser(user);
-    setDeleteOpen(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!deletingUser) return;
-    setDeleteLoading(true);
-    try {
-      await deleteUser(deletingUser.id);
-      setDeleteOpen(false);
-      setDeletingUser(null);
-      await loadUsers();
-    } catch (error) {
-      console.error("Error deleting user:", error);
-    } finally {
-      setDeleteLoading(false);
     }
   };
 
@@ -227,14 +200,6 @@ export default function UsersTable() {
                         onClick={() => handleEditClick(user)}
                       >
                         <Pencil size={14} />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-red-600 border-red-100 "
-                        onClick={() => handleDeleteClick(user)}
-                      >
-                        <Trash2 size={14} />
                       </Button>
                     </div>
                   </td>
@@ -400,38 +365,6 @@ export default function UsersTable() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete User</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete{" "}
-              <span className="font-medium text-foreground">
-                {deletingUser?.fullName}
-              </span>
-              ? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteOpen(false)}
-              disabled={deleteLoading}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteConfirm}
-              disabled={deleteLoading}
-            >
-              {deleteLoading ? "Deleting..." : "Delete"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

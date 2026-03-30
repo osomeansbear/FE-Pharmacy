@@ -15,10 +15,10 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import {
-  fetchAllCategories,
   createCategory,
-  updateCategory,
   deleteCategory,
+  fetchAllCategories,
+  updateCategory,
 } from "../../../../../api/categories.api";
 import { Category } from "../../../../../types/categoryTypes";
 
@@ -276,7 +276,9 @@ export default function CategoriesTable() {
                     <td className="px-6 py-4">
                       <span className="font-semibold text-foreground">
                         {category.parentId && (
-                          <span className="text-muted-foreground font-normal mr-1">-</span>
+                          <span className="text-muted-foreground font-normal mr-1">
+                            -
+                          </span>
                         )}
                         {category.name}
                       </span>
@@ -395,10 +397,7 @@ export default function CategoriesTable() {
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/50"
-            onClick={closeModal}
-          />
+          <div className="absolute inset-0 bg-black/50" onClick={closeModal} />
 
           <div className="relative bg-white rounded-xl border border-border w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b">
@@ -422,7 +421,10 @@ export default function CategoriesTable() {
               )}
 
               <div className="space-y-1.5">
-                <label htmlFor="name" className="text-sm font-medium text-foreground">
+                <label
+                  htmlFor="name"
+                  className="text-sm font-medium text-foreground"
+                >
                   Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -438,7 +440,10 @@ export default function CategoriesTable() {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="slug" className="text-sm font-medium text-foreground">
+                <label
+                  htmlFor="slug"
+                  className="text-sm font-medium text-foreground"
+                >
                   Slug{" "}
                   <span className="text-muted-foreground font-normal">
                     (auto-generated if empty)
@@ -456,7 +461,10 @@ export default function CategoriesTable() {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="parentId" className="text-sm font-medium text-foreground">
+                <label
+                  htmlFor="parentId"
+                  className="text-sm font-medium text-foreground"
+                >
                   Parent Category{" "}
                   <span className="text-muted-foreground font-normal">
                     (optional)
