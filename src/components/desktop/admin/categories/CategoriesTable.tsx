@@ -146,7 +146,7 @@ export default function CategoriesTable() {
     }
 
     const slug = form.slug.trim() || slugify(form.name);
-    const parentId = form.parentId ? Number(form.parentId) : undefined;
+    const parentId = form.parentId ? Number(form.parentId) : null;
 
     const payload = {
       name: form.name.trim(),

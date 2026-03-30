@@ -17,7 +17,7 @@ interface CategoryResponse {
 export interface CreateCategoryPayload {
   name: string;
   slug?: string;
-  parentId?: number;
+  parentId?: number | null;
 }
 
 export type UpdateCategoryPayload = Partial<CreateCategoryPayload>;
