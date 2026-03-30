@@ -1,5 +1,5 @@
-"use client";
+import { redirect } from "next/navigation";
 
 export default function ProfilePage() {
-  return <div></div>;
+  redirect("/users/profile/orders");
 }

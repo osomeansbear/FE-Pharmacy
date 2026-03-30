@@ -8,9 +8,9 @@ export interface User {
   fullName: string;
   phone: string;
   isActive: boolean;
-  role: "PATIENT" | "PHARMACIST" | "INVENTORY_MANAGER" | "ADMIN";
-  createdAt: string;
-  updatedAt: string;
+  role: "PATIENT" | "ADMIN";
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // 2. Define the interface for State & Actions
@@ -18,10 +18,13 @@ export interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  hasHydrated: boolean;
 
   // Actions
   login: (user: User, token: string) => void;
+  setUser: (user: User) => void;
   logout: () => void;
+  setHasHydrated: (hasHydrated: boolean) => void;
 }
 
 // 3. Create the Store
@@ -32,6 +35,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       isAuthenticated: false,
+      hasHydrated: false,
 
       // Action: Login
       login: (user, token) => {
@@ -39,23 +43,41 @@ export const useAuthStore = create<AuthState>()(
           user,
           token,
           isAuthenticated: true,
+          hasHydrated: true,
         });
+      },
+
+      setUser: (user) => {
+        set((state) => ({
+          user,
+          token: state.token,
+          isAuthenticated: !!state.token,
+          hasHydrated: true,
+        }));
+      },
+
+      setHasHydrated: (hasHydrated) => {
+        set({ hasHydrated });
       },
 
       // Action: Logout
       logout: () => {
-        // set({
-        //   user: null,
-        //   token: null,
-        //   isAuthenticated: false,
-        // });
-        // Optional: clear local storage if you want to be thorough
+        set({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          hasHydrated: true,
+        });
         localStorage.removeItem("auth-storage");
+        localStorage.removeItem("token");
       },
     }),
     {
       name: "auth-storage", // unique name for the key in localStorage
       storage: createJSONStorage(() => localStorage), // defaults to localStorage, but good to be explicit
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     },
   ),
 );

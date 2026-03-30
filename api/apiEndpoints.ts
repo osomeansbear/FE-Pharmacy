@@ -1,23 +1,23 @@
 const apiEndpoints = {
-  // auth: {
-  //   register: "/auth/register",
-  //   login: "/auth/login",
-  //   logout: "/auth/logout",
-  // },
-  // customer: {
-  //   getAllCustomers: "/customer",
-  //   getById: (id: string) => `/customer/${id}`,
-  //   update: (id: string) => `/customer/${id}`,
-  //   search: "/customer/search",
-  //   getCustomerGift: (id: string) => `/customer/${id}/gifts`,
-  //   claimGift: "/customer/claim-gift",
-  //   getByIdWithVouchers: (id: string) => `/customer/${id}/vouchers`,
-  // },
   category: {
     getAllCategories: "categories",
+    getCategoryById: (id: number) => `categories/${id}`,
+    createCategory: "categories",
+    updateCategory: (id: number) => `categories/${id}`,
+    deleteCategory: (id: number) => `categories/${id}`,
   },
   user: {
     getAllUsers: "users",
+    getUserById: (id: number) => `users/detail/${id}`,
+    updateUserById: (id: number) => `users/update/${id}`,
+    updateUserStatus: (id: number) => `users/${id}/status`,
+    updateUserRole: (id: number) => `users/${id}/role`,
+    deleteUser: (id: number) => `users/delete/${id}`,
+    createAddress: "users/profile/addresses",
+    getAddresses: "users/profile/addresses",
+    updateAddress: (id: number) => `users/profile/addresses/${id}`,
+    deleteAddress: (id: number) => `users/profile/addresses/${id}`,
+    healthProfile: "users/profile/health",
   },
   auth: {
     login: "auth/login",
@@ -25,6 +25,34 @@ const apiEndpoints = {
   },
   product: {
     getAllProducts: "products",
+    getProductBySlug: (slug: string) => `products/${slug}`,
+    createProduct: "products",
+    updateProduct: (id: number) => `products/${id}`,
+    deleteProduct: (id: number) => `products/${id}`,
+  },
+  cart: {
+    getMyCart: "cart",
+    addItem: "cart/items",
+    updateItem: (id: number) => `cart/items/${id}`,
+    removeItem: (id: number) => `cart/items/${id}`,
+  },
+  brands: {
+    getAllBrands: "brands",
+    getBrandById: (id: number) => `brands/${id}`,
+    createBrand: "brands",
+    updateBrand: (id: number) => `brands/${id}`,
+    deleteBrand: (id: number) => `brands/${id}`,
+  },
+  order: {
+    getAllOrders: "orders",
+    getMyOrders: "orders/me",
+    getMyOrderById: (id: number) => `orders/${id}`,
+    createOrder: "orders",
+    cancelOrder: (id: number) => `orders/${id}/cancel`,
+    updateOrderStatus: (id: number) => `orders/${id}/status`,
+  },
+  chat: {
+    sendMessage: "chat",
   },
 };
 

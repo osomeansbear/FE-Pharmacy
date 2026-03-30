@@ -2,15 +2,33 @@
 
 import ProductCard from "@/components/main/product/ProductCard";
 import { Button } from "@/components/ui/button";
-import { products } from "@/constants/mockData"; // Using the 30 mock data we created
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { fetchAllProducts } from "../../../api/products.api";
+import { Product } from "../../../types/productTypes";
 
 export default function HomePage() {
   // Taking the first 4 products for the "Trending" section
+  const [products, setProducts] = useState<Product[]>([]);
   const trendingProducts = products.slice(0, 4);
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  const loadData = async () => {
+    try {
+      const res = await fetchAllProducts();
+      setProducts(res);
+    } catch (error) {
+      console.log("Fetch error", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const categories = [
     { title: "Pain Relief", desc: "Analgesics and anti-inflammatories" },
@@ -76,11 +94,10 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="flex gap-8">
-          <ProductCard></ProductCard>
-          <ProductCard></ProductCard>
-          <ProductCard></ProductCard>
-          <ProductCard></ProductCard>
+        <div className="grid grid-cols-4 w-full gap-4">
+          {products.map((prod) => {
+            return <ProductCard key={prod.id} item={prod}></ProductCard>;
+          })}
         </div>
       </div>
     </main>

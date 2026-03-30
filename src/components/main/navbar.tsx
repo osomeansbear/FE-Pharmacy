@@ -11,26 +11,19 @@ import {
   UserPlus,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useAuthStore } from "../../../stores/authStore";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
-  const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
   const isLoggedIn = useAuthStore((s) => s.isAuthenticated);
+  const hasHydrated = useAuthStore((s) => s.hasHydrated);
   const navLinks = [
     { name: "Home", href: "/shop", icon: House },
     { name: "Products", href: "/products", icon: PillBottle },
     { name: "AI Assistant", href: "/ai-assistant", icon: MessageSquare },
   ];
-  const handleLogout = () => {
-    logout();
-    router.push("/login");
-  };
-
-  if (!user) return <div>Loading...</div>;
 
   return (
     <nav className="w-full bg-white text-success flex justify-between items-center px-6 md:px-20 lg:px-32 py-4 border-b border-gray-500 sticky top-0 z-50">
@@ -88,14 +81,13 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           {isLoggedIn ? (
             <div>
-              <Link href="/users/profile">{user.fullName}</Link>
+              <Link href="/users/profile">
+                {hasHydrated && user ? user.fullName : "Account"}
+              </Link>
             </div>
           ) : (
             <Link href="/register">
-              <Button
-                className="bg-success hover:bg-success/90 rounded-full text-white text-md gap-2"
-                onClick={handleLogout}
-              >
+              <Button className="bg-success hover:bg-success/90 rounded-full text-white text-md gap-2">
                 <UserPlus className="size-4" /> Register
               </Button>
             </Link>

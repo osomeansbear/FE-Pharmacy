@@ -9,23 +9,30 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import {
+  FolderTree,
   LayoutDashboard,
   Menu,
   Pill,
   ShoppingBag,
+  Tag,
   UserCircle,
-} from "lucide-react"; // Import icons
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "../../../stores/authStore";
 import LogoutButton from "./LogoutButton";
+
 export default function Header() {
   const pathname = usePathname();
   const logout = useAuthStore((s) => s.logout);
+  const user = useAuthStore((s) => s.user);
   const router = useRouter();
+
   const navItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Products", href: "/admin/products", icon: Pill },
+    { name: "Brands", href: "/admin/brands", icon: Tag },
+    { name: "Categories", href: "/admin/categories", icon: FolderTree },
     { name: "Users", href: "/admin/users", icon: UserCircle },
     { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
   ];
@@ -34,6 +41,16 @@ export default function Header() {
     logout();
     router.push("/login");
   };
+
+  const initials = user?.fullName
+    ? user.fullName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "AD";
+
   return (
     <div className="w-full flex bg-white justify-between items-center px-4 py-2 border-b-1 border-black">
       <div>
@@ -55,7 +72,7 @@ export default function Header() {
               <nav className="flex flex-col px-4 mt-4 gap-2">
                 {navItems.map((item) => {
                   const isActive = pathname === item.href;
-                  const Icon = item.icon; // Capitalize to use as a component
+                  const Icon = item.icon;
 
                   return (
                     <Link
@@ -84,23 +101,22 @@ export default function Header() {
               </nav>
             </div>
             <div className="border-t-1 border-black h-16">
-              <LogoutButton />
+              <LogoutButton onLogout={handleLogout} />
             </div>
           </SheetContent>
         </Sheet>
       </div>
 
       <div className="flex items-center gap-4 border-l border-black w-48 justify-end">
-        {/* The container below NEEDS min-w-0 for clamping to work */}
         <div className="min-w-0 flex-1 text-right ml-4">
           <p className="font-bold text-sm text-black line-clamp-1">
-            Nassssssssssssssme Nassssssssssssssme
+            {user?.fullName ?? "Admin"}
           </p>
-          <p className="text-xs text-black truncate">role</p>
+          <p className="text-xs text-black truncate">{user?.role ?? ""}</p>
         </div>
 
         <div className="h-10 w-10 shrink-0 rounded-full bg-success flex items-center justify-center text-white font-bold">
-          SC
+          {initials}
         </div>
       </div>
     </div>

@@ -26,9 +26,9 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
     // 2. Logic phân quyền dựa trên Role
     if (user) {
-      // Trường hợp: User là PATIENT nhưng đang cố vào trang không phải /users
+      // PATIENT users should stay in patient/public flows.
       if (user.role === "PATIENT" && !pathname.startsWith("/users")) {
-        router.replace("/users");
+        router.replace("/shop");
       }
       // Trường hợp: User là ADMIN nhưng đang cố vào trang không phải /admin
       else if (user.role === "ADMIN" && !pathname.startsWith("/admin")) {

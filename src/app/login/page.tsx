@@ -1,8 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import apiEndpoints from "../../../api/apiEndpoints";
-import axiosInstance from "../../../config/axios";
+import { loginUser } from "../../../api/auth.api";
 import { useAuthStore } from "../../../stores/authStore";
 
 export default function LoginPage() {
@@ -22,23 +21,33 @@ export default function LoginPage() {
     }
 
     try {
-      // Add your login API call here
-      console.log("Login attempt:", { email, password });
-      const res = await axiosInstance.post(apiEndpoints.auth.login, {
-        email,
-        password,
-      });
-      login(res.user, res.token);
-      console.log("Login successful:", res);
-      // Handle successful login (e.g., redirect, store token, etc.)
-    } catch (err) {
-      setError("Login failed. Please try again.");
+      const res = await loginUser(email, password);
+      localStorage.setItem("token", res.token);
+      login(
+        {
+          id: res.id,
+          email: res.email,
+          fullName: res.fullName,
+          phone: res.phone,
+          role: res.role,
+          isActive: res.isActive,
+        },
+        res.token,
+      );
+
+      if (res.role === "ADMIN") {
+        router.push("/admin/products");
+        return;
+      }
+      router.push("/shop");
+    } catch {
+      setError("Login failed. Please check your credentials.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <div className="flex items-center justify-center min-h-screen bg-secondary">
+      <div className="bg-white p-8 rounded-lg border border-border w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -48,7 +57,7 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-success"
               placeholder="Enter your email"
             />
           </div>
@@ -59,7 +68,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-success"
               placeholder="Enter your password"
             />
           </div>
@@ -68,8 +77,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            onClick={() => router.push("/shop")}
-            className="w-full bg-blue-500 text-white py-2 rounded-lg font-medium hover:bg-blue-600 transition"
+            className="w-full bg-success text-white py-2 rounded-lg font-medium hover:bg-success/90 transition"
           >
             Login
           </button>

@@ -4,7 +4,7 @@ import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
-// 1. Tạo Instance với cấu hình mặc định
+// 1. Create an Axios instance with default configuration
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 10000, // 10 giây
@@ -13,10 +13,11 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-// 2. Request Interceptor: Chèn Token vào Header trước khi gửi đi
+// 2. Request Interceptor
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem("token"); // Hoặc lấy từ Cookie/Redux
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,36 +28,35 @@ axiosInstance.interceptors.request.use(
   },
 );
 
-// 3. Response Interceptor: Xử lý dữ liệu và lỗi tập trung
+// 3. Response Interceptor
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
-    // Trả về trực tiếp data để bên ngoài không cần .data nữa
     return response.data;
   },
   (error: AxiosError) => {
     if (error.response) {
-      // Xử lý các mã lỗi HTTP phổ biến
       switch (error.response.status) {
         case 401:
-          console.error("Hết hạn phiên làm việc, vui lòng đăng nhập lại.");
-          // Logic logout hoặc redirect về login ở đây
+          //english
+          console.error("Unauthorized. Please log in again.");
+
           break;
         case 403:
-          console.error("Bạn không có quyền truy cập.");
+          console.error("You do not have permission to access this resource.");
           break;
         case 404:
-          console.error("Không tìm thấy tài nguyên.");
+          console.error("Resource not found.");
           break;
         case 500:
-          console.error("Lỗi máy chủ nội bộ.");
+          console.error("Internal server error.");
           break;
         default:
-          console.error("Đã xảy ra lỗi không xác định.");
+          console.error("An unexpected error occurred.");
       }
     } else if (error.request) {
-      console.error("Không nhận được phản hồi từ máy chủ.");
+      console.error("No response received from the server.");
     } else {
-      console.error("Lỗi thiết lập request:", error.message);
+      console.error("Error setting up request:", error.message);
     }
 
     return Promise.reject(error);

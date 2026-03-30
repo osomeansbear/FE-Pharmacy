@@ -1,14 +1,14 @@
 "use client";
-import Link from "next/link";
 import {
-  Pill,
-  Mail,
-  Phone,
-  MapPin,
   Facebook,
-  Twitter,
   Instagram,
+  Mail,
+  MapPin,
+  Phone,
+  Pill,
+  Twitter,
 } from "lucide-react";
+import Link from "next/link";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -56,12 +56,9 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/inventory"
-                  className="hover:text-success transition-colors"
-                >
+                <span className="text-slate-400 cursor-not-allowed">
                   Inventory
-                </Link>
+                </span>
               </li>
             </ul>
           </div>
@@ -71,36 +68,24 @@ export default function Footer() {
             <h4 className="font-semibold text-slate-900 mb-4">Support</h4>
             <ul className="space-y-2 text-sm text-slate-600">
               <li>
-                <Link
-                  href="/help"
-                  className="hover:text-success transition-colors"
-                >
+                <span className="text-slate-400 cursor-not-allowed">
                   Help Center
-                </Link>
+                </span>
               </li>
               <li>
-                <Link
-                  href="/privacy"
-                  className="hover:text-success transition-colors"
-                >
+                <span className="text-slate-400 cursor-not-allowed">
                   Privacy Policy
-                </Link>
+                </span>
               </li>
               <li>
-                <Link
-                  href="/terms"
-                  className="hover:text-success transition-colors"
-                >
+                <span className="text-slate-400 cursor-not-allowed">
                   Terms of Service
-                </Link>
+                </span>
               </li>
               <li>
-                <Link
-                  href="/contact"
-                  className="hover:text-success transition-colors"
-                >
+                <span className="text-slate-400 cursor-not-allowed">
                   Contact Us
-                </Link>
+                </span>
               </li>
             </ul>
           </div>

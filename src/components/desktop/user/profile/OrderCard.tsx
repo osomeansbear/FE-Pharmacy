@@ -8,6 +8,8 @@ interface OrderCardProps {
 }
 
 export default function OrderCard({ order }: OrderCardProps) {
+  const formatDate = new Date(order.createdAt).toLocaleString();
+
   return (
     <div className="flex flex-col bg-secondary border border-primary/20 rounded-xl">
       {/* Order info */}
@@ -37,9 +39,11 @@ export default function OrderCard({ order }: OrderCardProps) {
               <div className="flex flex-col gap-6">
                 <div className="flex gap-6">
                   <span className="text-lg font-semibold">
-                    {item.unitPrice}
+                    {item.unitPrice ?? "0"}
                   </span>
-                  <span className="text-muted text-lg">{item.quantity}</span>
+                  <span className="text-muted text-lg">
+                    {item.quantity ?? "0"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -49,13 +53,13 @@ export default function OrderCard({ order }: OrderCardProps) {
         {/* items total price */}
         <div className="flex justify-end gap-2">
           <span>Total:</span>
-          <span className="text-success">{order.totalAmount}</span>
+          <span className="text-success">{order.totalAmount} VND</span>
         </div>
       </div>
 
       {/* button */}
       <div className="flex items-center justify-between px-4 py-2 h-16">
-        <span className="text-muted text-sm">{order.createdAt}</span>
+        <span className="text-muted text-sm">{formatDate}</span>
         <Button className="bg-secondary text-success hover:bg-success hover:text-secondary rounded-full border border-success">
           Buy Again
         </Button>

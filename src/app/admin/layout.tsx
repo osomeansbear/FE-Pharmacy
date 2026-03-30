@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AdminProtectedRoute } from "../../components/main/AdminProtectedRoute";
 import Header from "../../components/main/Header";
 import "../globals.css";
 
@@ -15,11 +16,12 @@ export default function AdminLayout({
   return (
     <html lang="en">
       <body>
-        <div className="min-w-screen min-h-screen ">
-          <Header />
-
-          {children}
-        </div>
+        <AdminProtectedRoute>
+          <div className="min-w-screen min-h-screen">
+            <Header />
+            {children}
+          </div>
+        </AdminProtectedRoute>
       </body>
     </html>
   );

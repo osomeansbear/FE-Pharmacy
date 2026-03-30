@@ -1,5 +1,8 @@
 export interface APIResponse<T> {
-  data: T;
   message: string;
-  statusCode: number | null;
+  data: T;
+}
+
+export interface APIErrorResponse {
+  error: string;
 }

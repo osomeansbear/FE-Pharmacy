@@ -12,7 +12,7 @@ export default function ProfileLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className=" bg-muted/5 flex min-h-[60vh]">
+    <div className=" bg-muted/5 flex min-h-[60vh] gap-2">
       <div className="w-md h-full">
         <ProfileCard />
       </div>
