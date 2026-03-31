@@ -259,20 +259,31 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button
-              className="h-12 w-full justify-center rounded-lg border border-success bg-white text-base text-success md:w-56"
-              onClick={() => handleAddToCart(false)}
-              disabled={submitting || isOutOfStock || !selectedUnit}
-            >
-              Add to cart
-            </Button>
-            <Button
-              className="h-12 w-full justify-center rounded-lg bg-success text-base text-white md:w-56"
-              onClick={() => handleAddToCart(true)}
-              disabled={submitting || isOutOfStock || !selectedUnit}
-            >
-              Buy now
-            </Button>
+            {product.requiresRx ? (
+              <Button
+                className="h-12 w-full justify-center rounded-lg border border-slate-300 bg-slate-100 text-base text-slate-500 md:w-auto cursor-not-allowed"
+                disabled
+              >
+                Requires Prescription
+              </Button>
+            ) : (
+              <>
+                <Button
+                  className="h-12 w-full justify-center rounded-lg border border-success bg-white text-base text-success md:w-56"
+                  onClick={() => handleAddToCart(false)}
+                  disabled={submitting || isOutOfStock || !selectedUnit}
+                >
+                  Add to cart
+                </Button>
+                <Button
+                  className="h-12 w-full justify-center rounded-lg bg-success text-base text-white md:w-56"
+                  onClick={() => handleAddToCart(true)}
+                  disabled={submitting || isOutOfStock || !selectedUnit}
+                >
+                  Buy now
+                </Button>
+              </>
+            )}
           </div>
 
           {isOutOfStock && (

@@ -1,4 +1,4 @@
-export type PaymentMethod = "CASH" | "CARD" | "ONLINE";
+export type PaymentMethod = "CASH" | "CARD" | "ONLINE" | "INSURANCE";
 
 export type UnitType = "TABLET" | "BOX";
 
@@ -10,6 +10,18 @@ export interface CreateOrderItemPayload {
 
 export interface CreateOrderPayload {
   addressId: number;
+  paymentMethod: PaymentMethod;
+  items: CreateOrderItemPayload[];
+}
+
+export interface AdminCreateOrderPayload {
+  userId: number;
+  shippingAddress: {
+    province: string;
+    district: string;
+    ward: string;
+    detail: string;
+  };
   paymentMethod: PaymentMethod;
   items: CreateOrderItemPayload[];
 }

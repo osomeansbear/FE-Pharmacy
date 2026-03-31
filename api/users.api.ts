@@ -72,6 +72,16 @@ export async function fetchMyAddresses(): Promise<Address[]> {
   return res.addresses;
 }
 
+export async function updateMyProfile(
+  payload: UpdateUserPayload,
+): Promise<User> {
+  const res = await axiosInstance.patch<UpdateUserResponse, UpdateUserResponse>(
+    "users/profile",
+    payload,
+  );
+  return res.user;
+}
+
 export async function updateUserById(
   id: number,
   payload: UpdateUserPayload,
@@ -134,4 +144,14 @@ export async function updateHealthProfile(
     HealthProfileResponse
   >(apiEndpoints.user.healthProfile, data);
   return res.healthProfile;
+}
+
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string,
+): Promise<void> {
+  await axiosInstance.patch(apiEndpoints.user.changePassword, {
+    currentPassword,
+    newPassword,
+  });
 }

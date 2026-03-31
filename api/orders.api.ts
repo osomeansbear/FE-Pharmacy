@@ -1,5 +1,5 @@
 import axiosInstance from "../config/axios";
-import { CreateOrderPayload, OrderListType } from "../types/orderTypes";
+import { AdminCreateOrderPayload, CreateOrderPayload, OrderListType } from "../types/orderTypes";
 import apiEndpoints from "./apiEndpoints";
 
 interface OrdersResponse {
@@ -31,6 +31,16 @@ export async function createOrder(
 ): Promise<OrderListType> {
   const res = await axiosInstance.post<OrderResponse, OrderResponse>(
     apiEndpoints.order.createOrder,
+    payload,
+  );
+  return res.order;
+}
+
+export async function adminCreateOrder(
+  payload: AdminCreateOrderPayload,
+): Promise<OrderListType> {
+  const res = await axiosInstance.post<OrderResponse, OrderResponse>(
+    apiEndpoints.order.adminCreateOrder,
     payload,
   );
   return res.order;

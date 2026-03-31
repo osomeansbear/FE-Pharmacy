@@ -18,6 +18,7 @@ const apiEndpoints = {
     updateAddress: (id: number) => `users/profile/addresses/${id}`,
     deleteAddress: (id: number) => `users/profile/addresses/${id}`,
     healthProfile: "users/profile/health",
+    changePassword: "users/profile/password",
   },
   auth: {
     login: "auth/login",
@@ -48,6 +49,7 @@ const apiEndpoints = {
     getMyOrders: "orders/me",
     getMyOrderById: (id: number) => `orders/${id}`,
     createOrder: "orders",
+    adminCreateOrder: "orders/admin-create",
     cancelOrder: (id: number) => `orders/${id}/cancel`,
     updateOrderStatus: (id: number) => `orders/${id}/status`,
   },

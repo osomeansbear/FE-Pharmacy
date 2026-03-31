@@ -48,6 +48,30 @@ export default function ProductCard({ item }: ProductCardProps) {
     }
   };
 
+  const handleBuyNow = async (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setError("");
+
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      setAdding(true);
+      await addCartItem({
+        productId: item.id,
+        unitType: defaultUnitType,
+        quantity: "1",
+      });
+      router.push("/users/cart");
+    } catch {
+      setError("Unable to process. Please try again.");
+    } finally {
+      setAdding(false);
+    }
+  };
+
   return (
     <div
       className="bg-white rounded-xl overflow-hidden flex flex-col border hover:border-1 border-transparent hover:border-success hover:cursor-pointer"
@@ -77,19 +101,39 @@ export default function ProductCard({ item }: ProductCardProps) {
         <div className="text-xs text-slate-400 mt-2">
           {defaultUnit ? defaultUnit.unitType : ""}
         </div>
-        <div className="mt-4 flex justify-between items-end">
-          <div>
-            <p className="text-xs text-slate-400 font-medium">Price</p>
-            <p className="text-xl font-bold text-slate-900">{displayPrice}</p>
+        <div className="mt-4">
+          <div className="flex justify-between items-end mb-3">
+            <div>
+              <p className="text-xs text-slate-400 font-medium">Price</p>
+              <p className="text-xl font-bold text-slate-900">{displayPrice}</p>
+            </div>
           </div>
-          <Button
-            onClick={handleAddToCart}
-            disabled={adding}
-            size="icon"
-            className="bg-success hover:bg-success/80 text-white rounded-full h-10 w-10 justify-center"
-          >
-            <Plus size={20} />
-          </Button>
+          {item.requiresRx ? (
+            <Button
+              disabled
+              className="w-full cursor-not-allowed bg-slate-100 border border-slate-300 text-slate-500 text-xs rounded-lg h-9"
+            >
+              Requires Prescription
+            </Button>
+          ) : (
+            <div className="flex gap-2">
+              <Button
+                onClick={handleAddToCart}
+                disabled={adding}
+                className="flex-1 bg-white border border-success text-success hover:bg-success hover:text-white text-xs rounded-lg h-9"
+              >
+                <Plus size={14} className="mr-1" />
+                Add to Cart
+              </Button>
+              <Button
+                onClick={handleBuyNow}
+                disabled={adding}
+                className="flex-1 bg-success hover:bg-success/80 text-white text-xs rounded-lg h-9"
+              >
+                Buy Now
+              </Button>
+            </div>
+          )}
         </div>
         {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
       </div>

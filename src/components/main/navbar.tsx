@@ -19,6 +19,13 @@ export default function Navbar() {
   const user = useAuthStore((s) => s.user);
   const isLoggedIn = useAuthStore((s) => s.isAuthenticated);
   const hasHydrated = useAuthStore((s) => s.hasHydrated);
+  const isAdmin = hasHydrated && user?.role === "ADMIN";
+
+  // Hide navbar for admins
+  if (isAdmin) {
+    return null;
+  }
+
   const navLinks = [
     { name: "Home", href: "/shop", icon: House },
     { name: "Products", href: "/products", icon: PillBottle },

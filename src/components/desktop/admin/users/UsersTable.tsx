@@ -17,7 +17,7 @@ import {
   updateUserRole,
   updateUserStatus,
 } from "../../../../../api/users.api";
-import { User, AppRole } from "../../../../../types/userTypes";
+import { AppRole, User } from "../../../../../types/userTypes";
 
 export default function UsersTable() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -251,41 +251,6 @@ export default function UsersTable() {
               </select>
             </div>
           </div>
-
-          {/* <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage === 1 || totalPages === 0}
-              onClick={() => setCurrentPage((p) => p - 1)}
-            >
-              <ChevronLeft size={16} />
-            </Button>
-            <div className="flex gap-1">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setCurrentPage(page)}
-                    className={`h-8 w-8 p-0 ${
-                      currentPage === page ? "bg-success" : ""
-                    }`}
-                  >
-                    {page}
-                  </Button>
-                )
-              )}
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage === totalPages || totalPages === 0}
-              onClick={() => setCurrentPage((p) => p + 1)}
-            >
-              <ChevronRight size={16} />
-            </Button> */}
         </div>
       </div>
 
@@ -305,7 +270,9 @@ export default function UsersTable() {
           <div className="space-y-5 py-2">
             {/* Role select */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-foreground">Role</label>
+              <label className="text-sm font-medium text-foreground">
+                Role
+              </label>
               <select
                 value={editRole}
                 onChange={(e) => setEditRole(e.target.value as AppRole)}
@@ -364,7 +331,6 @@ export default function UsersTable() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
     </div>
   );
 }

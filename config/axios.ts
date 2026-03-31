@@ -33,13 +33,15 @@ axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     return response.data;
   },
-  (error: AxiosError) => {
+  (error: AxiosError<{ message?: string }>) => {
     if (error.response) {
+      const serverMessage = error.response.data?.message;
       switch (error.response.status) {
+        case 400:
+          console.error("Bad request:", serverMessage || "Invalid request data.");
+          break;
         case 401:
-          //english
           console.error("Unauthorized. Please log in again.");
-
           break;
         case 403:
           console.error("You do not have permission to access this resource.");
@@ -51,7 +53,7 @@ axiosInstance.interceptors.response.use(
           console.error("Internal server error.");
           break;
         default:
-          console.error("An unexpected error occurred.");
+          console.error("Request failed:", serverMessage || error.message);
       }
     } else if (error.request) {
       console.error("No response received from the server.");
