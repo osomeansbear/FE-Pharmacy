@@ -21,7 +21,14 @@ export default function RegisterPage() {
     setError("");
 
     // 1. Validate inputs
-    if (!fullName || !email || !phone || !dob || !password || !confirmPassword) {
+    if (
+      !fullName ||
+      !email ||
+      !phone ||
+      !dob ||
+      !password ||
+      !confirmPassword
+    ) {
       setError("Please fill in all fields");
       return;
     }
@@ -32,8 +39,8 @@ export default function RegisterPage() {
       return;
     }
 
-    if (phone.length < 10) {
-      setError("Phone number must be at least 10 digits");
+    if (phone.length < 10 || phone.length > 11) {
+      setError("Phone number must be between 10 and 11 digits");
       return;
     }
     setLoading(true);
@@ -49,10 +56,12 @@ export default function RegisterPage() {
       });
       router.push("/login");
     } catch (err: unknown) {
-      const errorMessage =
-        (err as { response?: { data?: { error?: string } } })?.response?.data
-          ?.error || "Registration failed. Please try again.";
-      setError(errorMessage);
+      const data = (err as { response?: { data?: { error?: string; message?: unknown } } })?.response?.data;
+      if (Array.isArray(data?.message)) {
+        setError(data.message.map((e: { message: string }) => e.message).join(", "));
+      } else {
+        setError(data?.error || "Registration failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

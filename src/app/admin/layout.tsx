@@ -14,15 +14,11 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
-        <AdminProtectedRoute>
-          <div className="min-w-screen min-h-screen">
-            <Header />
-            {children}
-          </div>
-        </AdminProtectedRoute>
-      </body>
-    </html>
+    <AdminProtectedRoute>
+      <div className="min-w-screen min-h-screen">
+        <Header />
+        {children}
+      </div>
+    </AdminProtectedRoute>
   );
 }
