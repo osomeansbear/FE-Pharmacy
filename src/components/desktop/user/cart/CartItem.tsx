@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { formatVND } from "@/lib/utils";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { CartItem as CartItemType } from "../../../../../types/cartItemTypes";
 
@@ -20,7 +21,6 @@ export default function CartItem({
   busy = false,
 }: CartItemProps) {
   const quantity = Number(item.quantity);
-  const price = Number(item.unitPrice);
 
   return (
     <div className="flex justify-between items-center w-full  px-4 py-2 border border-black rounded-xl bg-white">
@@ -36,7 +36,7 @@ export default function CartItem({
         <div className="flex flex-col">
           <span className="text-sm text-info">{item.unitType}</span>
           <span className="font-bold">{item.productName}</span>
-          <span className="text-emerald-700/90 font-bold">{price} VND</span>
+          <span className="text-emerald-700/90 font-bold">{formatVND(item.unitPrice)}</span>
         </div>
       </div>
 

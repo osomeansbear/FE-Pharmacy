@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { formatVND } from "@/lib/utils";
 import { OrderListType } from "../../../../../types/orderTypes";
 
 interface OrderCardProps {
@@ -39,7 +40,7 @@ export default function OrderCard({ order }: OrderCardProps) {
               <div className="flex flex-col gap-6">
                 <div className="flex gap-6">
                   <span className="text-lg font-semibold">
-                    {item.unitPrice ?? "0"}
+                    {formatVND(item.unitPrice ?? "0")}
                   </span>
                   <span className="text-muted text-lg">
                     {item.quantity ?? "0"}
@@ -53,7 +54,7 @@ export default function OrderCard({ order }: OrderCardProps) {
         {/* items total price */}
         <div className="flex justify-end gap-2">
           <span>Total:</span>
-          <span className="text-success">{order.totalAmount} VND</span>
+          <span className="text-success">{formatVND(order.totalAmount)}</span>
         </div>
       </div>
 

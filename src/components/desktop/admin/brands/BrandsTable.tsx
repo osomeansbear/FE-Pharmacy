@@ -2,17 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  AlertCircle,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-  Pencil,
-  Plus,
-  Search,
-  Trash2,
-  X,
-} from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import {
   fetchAllBrands,
@@ -23,20 +13,11 @@ import {
   UpdateBrandPayload,
 } from "../../../../../api/brands.api";
 import { Brand } from "../../../../../types/brandTypes";
-
-interface BrandFormData {
-  name: string;
-  slug: string;
-  description: string;
-  logoUrl: string;
-}
-
-const emptyForm: BrandFormData = {
-  name: "",
-  slug: "",
-  description: "",
-  logoUrl: "",
-};
+import DeleteConfirmModal from "../shared/DeleteConfirmModal";
+import TablePageHeader from "../shared/TablePageHeader";
+import TablePagination from "../shared/TablePagination";
+import TableSearchBar from "../shared/TableSearchBar";
+import BrandFormModal, { BrandFormData } from "./BrandFormModal";
 
 function slugify(text: string): string {
   return text
@@ -46,6 +27,13 @@ function slugify(text: string): string {
     .replace(/[\s_]+/g, "-")
     .replace(/-+/g, "-");
 }
+
+const emptyForm: BrandFormData = {
+  name: "",
+  slug: "",
+  description: "",
+  logoUrl: "",
+};
 
 export default function BrandsTable() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -201,41 +189,18 @@ export default function BrandsTable() {
 
   return (
     <div className="p-8 space-y-6">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Brands Management
-          </h1>
-          <p className="text-muted-foreground">
-            Manage pharmaceutical brands and manufacturers.
-          </p>
-        </div>
-        <Button
-          className="bg-success hover:bg-success/90 text-white gap-2 rounded-lg"
-          onClick={openCreateModal}
-        >
-          <Plus size={18} /> Add Brand
-        </Button>
-      </div>
+      <TablePageHeader
+        title="Brands Management"
+        description="Manage pharmaceutical brands and manufacturers."
+        addLabel="Add Brand"
+        onAdd={openCreateModal}
+      />
 
-      <div className="relative w-full">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-        <input
-          type="text"
-          placeholder="Search brands..."
-          className="w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-success/20 focus:border-success outline-none transition-all text-sm"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        {searchTerm && (
-          <button
-            onClick={() => setSearchTerm("")}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-          >
-            <X size={14} />
-          </button>
-        )}
-      </div>
+      <TableSearchBar
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Search brands..."
+      />
 
       <div className="rounded-xl border bg-white overflow-hidden">
         <table className="w-full text-sm text-left">
@@ -250,10 +215,7 @@ export default function BrandsTable() {
           <tbody className="divide-y">
             {loading && (
               <tr>
-                <td
-                  colSpan={4}
-                  className="px-6 py-12 text-center text-muted-foreground"
-                >
+                <td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">
                   Loading brands...
                 </td>
               </tr>
@@ -269,10 +231,7 @@ export default function BrandsTable() {
 
             {!loading && !error && currentItems.length > 0
               ? currentItems.map((brand) => (
-                  <tr
-                    key={brand.id}
-                    className="hover:bg-secondary/50 transition-colors"
-                  >
+                  <tr key={brand.id} className="hover:bg-secondary/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {brand.logoUrl ? (
@@ -286,9 +245,7 @@ export default function BrandsTable() {
                             {brand.name.charAt(0).toUpperCase()}
                           </div>
                         )}
-                        <span className="font-semibold text-foreground">
-                          {brand.name}
-                        </span>
+                        <span className="font-semibold text-foreground">{brand.name}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -323,10 +280,7 @@ export default function BrandsTable() {
 
             {!loading && !error && currentItems.length === 0 && (
               <tr>
-                <td
-                  colSpan={4}
-                  className="px-6 py-12 text-center text-muted-foreground"
-                >
+                <td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">
                   No brands found
                 </td>
               </tr>
@@ -334,244 +288,37 @@ export default function BrandsTable() {
           </tbody>
         </table>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 bg-secondary border-t gap-4">
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <div>
-              Showing{" "}
-              <span className="font-medium text-foreground">
-                {filteredBrands.length > 0 ? startIndex + 1 : 0}
-              </span>{" "}
-              to{" "}
-              <span className="font-medium text-foreground">
-                {Math.min(endIndex, filteredBrands.length)}
-              </span>{" "}
-              of{" "}
-              <span className="font-medium text-foreground">
-                {filteredBrands.length}
-              </span>{" "}
-              results
-            </div>
-
-            <div className="flex items-center gap-2 border-l pl-4">
-              <span className="whitespace-nowrap">Rows per page:</span>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                className="bg-transparent font-medium text-foreground focus:outline-none"
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage === 1 || totalPages === 0}
-              onClick={() => setCurrentPage((prev) => prev - 1)}
-            >
-              <ChevronLeft size={16} />
-            </Button>
-            <div className="flex items-center gap-1">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setCurrentPage(page)}
-                    className={`h-8 w-8 p-0 ${currentPage === page ? "bg-success" : ""}`}
-                  >
-                    {page}
-                  </Button>
-                ),
-              )}
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage === totalPages || totalPages === 0}
-              onClick={() => setCurrentPage((prev) => prev + 1)}
-            >
-              <ChevronRight size={16} />
-            </Button>
-          </div>
-        </div>
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          startIndex={startIndex}
+          endIndex={endIndex}
+          totalItems={filteredBrands.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={setItemsPerPage}
+        />
       </div>
 
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/50"
-            onClick={closeModal}
-          />
+      <BrandFormModal
+        open={modalOpen}
+        mode={modalMode}
+        form={form}
+        submitting={submitting}
+        formError={formError}
+        onChange={handleFormChange}
+        onSubmit={handleSubmit}
+        onClose={closeModal}
+      />
 
-          <div className="relative bg-white rounded-xl border border-border w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h2 className="text-lg font-semibold text-foreground">
-                {modalMode === "create" ? "Add New Brand" : "Edit Brand"}
-              </h2>
-              <button
-                onClick={closeModal}
-                className="text-muted-foreground hover:text-muted-foreground transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
-              {formError && (
-                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                  <AlertCircle size={14} />
-                  {formError}
-                </div>
-              )}
-
-              <div className="space-y-1.5">
-                <label htmlFor="name" className="text-sm font-medium text-foreground">
-                  Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={form.name}
-                  onChange={handleFormChange}
-                  placeholder="e.g. Pfizer"
-                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-success/20 focus:border-success outline-none transition-all"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label htmlFor="slug" className="text-sm font-medium text-foreground">
-                  Slug{" "}
-                  <span className="text-muted-foreground font-normal">
-                    (auto-generated if empty)
-                  </span>
-                </label>
-                <input
-                  id="slug"
-                  name="slug"
-                  type="text"
-                  value={form.slug}
-                  onChange={handleFormChange}
-                  placeholder={slugify(form.name) || "auto-generated-slug"}
-                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-success/20 focus:border-success outline-none transition-all"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label htmlFor="description" className="text-sm font-medium text-foreground">
-                  Description
-                </label>
-                <textarea
-                  id="description"
-                  name="description"
-                  rows={3}
-                  value={form.description}
-                  onChange={handleFormChange}
-                  placeholder="Brief brand description..."
-                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-success/20 focus:border-success outline-none transition-all resize-none"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label htmlFor="logoUrl" className="text-sm font-medium text-foreground">
-                  Logo URL
-                </label>
-                <input
-                  id="logoUrl"
-                  name="logoUrl"
-                  type="text"
-                  value={form.logoUrl}
-                  onChange={handleFormChange}
-                  placeholder="https://example.com/logo.png"
-                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-success/20 focus:border-success outline-none transition-all"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-4 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={closeModal}
-                  disabled={submitting}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className="bg-success hover:bg-success/90 text-white"
-                  disabled={submitting}
-                >
-                  {submitting && (
-                    <Loader2 size={16} className="mr-2 animate-spin" />
-                  )}
-                  {modalMode === "create" ? "Create Brand" : "Save Changes"}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {deleteConfirmOpen && deletingBrand && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/50"
-            onClick={closeDeleteConfirm}
-          />
-
-          <div className="relative bg-white rounded-xl border border-border w-full max-w-md mx-4">
-            <div className="px-6 py-5 space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
-                  <Trash2 size={18} className="text-red-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">
-                    Delete Brand
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Are you sure you want to delete{" "}
-                    <span className="font-medium text-foreground">
-                      {deletingBrand.name}
-                    </span>
-                    ? This action cannot be undone.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-2 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={closeDeleteConfirm}
-                  disabled={deleting}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="button"
-                  className="bg-red-600 hover:bg-red-700 text-white"
-                  onClick={handleDelete}
-                  disabled={deleting}
-                >
-                  {deleting && (
-                    <Loader2 size={16} className="mr-2 animate-spin" />
-                  )}
-                  Delete
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmModal
+        open={deleteConfirmOpen && !!deletingBrand}
+        entityLabel="Brand"
+        entityName={deletingBrand?.name ?? ""}
+        deleting={deleting}
+        onConfirm={handleDelete}
+        onCancel={closeDeleteConfirm}
+      />
     </div>
   );
 }

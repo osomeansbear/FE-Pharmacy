@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { formatVND } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { addCartItem } from "../../../../api/cart.api";
@@ -64,16 +65,6 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       </div>
     );
   }
-
-  const formatPrice = (value: string) => {
-    const number = Number(value);
-    if (!Number.isFinite(number)) return value;
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 2,
-    }).format(number);
-  };
 
   const onIncreaseQuantity = () => {
     setQuantity((prev) => {
@@ -195,7 +186,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           <div className="rounded-lg bg-slate-100 p-4">
             <p className="text-sm text-slate-500">Price</p>
             <p className="text-2xl font-semibold text-emerald-700">
-              {selectedUnit ? formatPrice(selectedUnit.price) : "Unavailable"}
+              {selectedUnit ? formatVND(selectedUnit.price) : "Unavailable"}
             </p>
             {selectedUnit && (
               <p className="text-sm text-slate-600">

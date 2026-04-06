@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { formatVND } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { MouseEvent, useState } from "react";
@@ -21,9 +22,7 @@ export default function ProductCard({ item }: ProductCardProps) {
 
   const defaultUnit = item.units?.find((u) => u.isDefault) ?? item.units?.[0];
   const defaultUnitType: UnitType = (defaultUnit?.unitType as UnitType) ?? "BOX";
-  const displayPrice = defaultUnit
-    ? Number(defaultUnit.price).toLocaleString()
-    : "N/A";
+  const displayPrice = defaultUnit ? formatVND(defaultUnit.price) : "N/A";
 
   const handleAddToCart = async (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
