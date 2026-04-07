@@ -1,4 +1,4 @@
-export type PaymentMethod = "CASH" | "CARD" | "ONLINE" | "INSURANCE";
+export type PaymentMethod = "CASH" | "CARD" | "ONLINE";
 
 export type UnitType = "TABLET" | "BOX";
 

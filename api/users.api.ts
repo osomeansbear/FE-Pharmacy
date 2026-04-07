@@ -40,6 +40,13 @@ interface UpdateUserResponse {
   user: User;
 }
 
+export async function getMe(): Promise<User> {
+  const res = await axiosInstance.get<UpdateUserResponse, UpdateUserResponse>(
+    apiEndpoints.user.getMe,
+  );
+  return res.user;
+}
+
 export async function fetchAllUsers(): Promise<User[]> {
   const res = await axiosInstance.get<UsersResponse, UsersResponse>(
     apiEndpoints.user.getAllUsers,
@@ -70,6 +77,21 @@ export async function fetchMyAddresses(): Promise<Address[]> {
     GetAddressesResponse
   >(apiEndpoints.user.getAddresses);
   return res.addresses;
+}
+
+export async function updateAddress(
+  id: number,
+  payload: Partial<Omit<Address, "id" | "userId">>,
+): Promise<Address> {
+  const res = await axiosInstance.patch<
+    CreateAddressResponse,
+    CreateAddressResponse
+  >(apiEndpoints.user.updateAddress(id), payload);
+  return res.address;
+}
+
+export async function deleteAddress(id: number): Promise<void> {
+  await axiosInstance.delete(apiEndpoints.user.deleteAddress(id));
 }
 
 export async function updateMyProfile(

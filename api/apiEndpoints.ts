@@ -7,6 +7,7 @@ const apiEndpoints = {
     deleteCategory: (id: number) => `categories/${id}`,
   },
   user: {
+    getMe: "users/profile",
     getAllUsers: "users",
     getUserById: (id: number) => `users/detail/${id}`,
     updateUserById: (id: number) => `users/update/${id}`,
@@ -50,6 +51,7 @@ const apiEndpoints = {
     getMyOrderById: (id: number) => `orders/${id}`,
     createOrder: "orders",
     adminCreateOrder: "orders/admin-create",
+    payOrder: (id: number) => `orders/${id}/pay`,
     cancelOrder: (id: number) => `orders/${id}/cancel`,
     updateOrderStatus: (id: number) => `orders/${id}/status`,
   },

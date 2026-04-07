@@ -3,7 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { MapPinHouse, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { createAddress, fetchMyAddresses } from "../../../../../api/users.api";
+import {
+  createAddress,
+  deleteAddress,
+  fetchMyAddresses,
+  updateAddress,
+} from "../../../../../api/users.api";
 import { useAuthStore } from "../../../../../stores/authStore";
 import { Address } from "../../../../../types/addressTypes";
 import AddressCard from "./AddressCard"; // Nhớ import đúng tên file
@@ -51,38 +56,48 @@ export default function AddressTable() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: number) => {
-    setAddresses((prev) => prev.filter((addr) => addr.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteAddress(id);
+      setAddresses((prev) => prev.filter((addr) => addr.id !== id));
+    } catch {
+      setError("Unable to delete address.");
+    }
   };
 
-  const handleSetDefault = (id: number) => {
-    setAddresses((prev) =>
-      prev.map((addr) => ({
-        ...addr,
-        isDefault: addr.id === id,
-      })),
-    );
+  const handleSetDefault = async (id: number) => {
+    try {
+      await updateAddress(id, { isDefault: true });
+      setAddresses((prev) =>
+        prev.map((addr) => ({ ...addr, isDefault: addr.id === id })),
+      );
+    } catch {
+      setError("Unable to set default address.");
+    }
   };
 
-  // Xử lý khi Form Submit
   const handleFormSubmit = async (formData: Omit<Address, "id" | "userId">) => {
     setError("");
 
     if (editingAddress) {
-      // Logic Cập nhật (Edit)
-      setAddresses((prev) => {
-        let updatedList = prev.map((addr) =>
-          addr.id === editingAddress.id ? { ...addr, ...formData } : addr,
-        );
-        // Nếu user chọn isDefault = true, gỡ default các địa chỉ khác
-        if (formData.isDefault) {
-          updatedList = updatedList.map((addr) => ({
-            ...addr,
-            isDefault: addr.id === editingAddress.id,
-          }));
-        }
-        return updatedList;
-      });
+      try {
+        const updated = await updateAddress(editingAddress.id, formData);
+        setAddresses((prev) => {
+          let list = prev.map((addr) =>
+            addr.id === editingAddress.id ? updated : addr,
+          );
+          if (formData.isDefault) {
+            list = list.map((addr) => ({
+              ...addr,
+              isDefault: addr.id === editingAddress.id,
+            }));
+          }
+          return list;
+        });
+      } catch {
+        setError("Unable to update address.");
+        return;
+      }
     } else {
       try {
         const created = await createAddress({
@@ -91,27 +106,13 @@ export default function AddressTable() {
           ward: formData.ward,
           detail: formData.detail,
         });
-
-        setAddresses((prev) => {
-          let newList = [
-            ...prev,
-            { ...created, isDefault: formData.isDefault },
-          ];
-          if (formData.isDefault) {
-            newList = newList.map((addr) => ({
-              ...addr,
-              isDefault: addr.id === created.id,
-            }));
-          }
-          return newList;
-        });
+        setAddresses((prev) => [...prev, { ...created, isDefault: false }]);
       } catch {
         setError("Unable to create address.");
         return;
       }
     }
 
-    // Đóng modal sau khi xong
     setIsModalOpen(false);
   };
 

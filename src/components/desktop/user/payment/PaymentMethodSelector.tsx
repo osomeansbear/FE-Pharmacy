@@ -5,7 +5,6 @@ export const PAYMENT_LABELS: Record<PaymentMethod, string> = {
   CASH: "Cash on Delivery",
   CARD: "Credit / Debit Card",
   ONLINE: "Online Transfer",
-  INSURANCE: "Health Insurance",
 };
 
 interface PaymentMethodSelectorProps {

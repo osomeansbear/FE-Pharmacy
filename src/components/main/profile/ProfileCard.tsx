@@ -9,9 +9,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { CircleUserRound, KeyRound, LogOut } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { changePassword, updateMyProfile } from "../../../../api/users.api";
+import { useEffect, useState } from "react";
+import { changePassword, getMe, updateMyProfile } from "../../../../api/users.api";
 import { useAuthStore } from "../../../../stores/authStore";
 
 export default function ProfileCard() {
@@ -38,14 +38,18 @@ export default function ProfileCard() {
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordSuccess, setPasswordSuccess] = useState("");
 
-  // Local state cho form edit
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
-    // Thường email không cho đổi trực tiếp ở đây, nhưng bạn có thể thêm nếu cần
   });
 
-  // Cập nhật dữ liệu form khi user load xong hoặc mở modal
+  // Fetch fresh profile data on mount to stay in sync after page refresh
+  useEffect(() => {
+    getMe()
+      .then((freshUser) => setUser({ ...user!, ...freshUser }))
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -76,11 +80,20 @@ export default function ProfileCard() {
 
     setPasswordSaving(true);
     try {
-      await changePassword(passwordForm.currentPassword, passwordForm.newPassword);
+      await changePassword(
+        passwordForm.currentPassword,
+        passwordForm.newPassword,
+      );
       setPasswordSuccess("Password changed successfully.");
-      setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
     } catch {
-      setPasswordError("Failed to change password. Check your current password.");
+      setPasswordError(
+        "Failed to change password. Check your current password.",
+      );
     } finally {
       setPasswordSaving(false);
     }
@@ -171,7 +184,11 @@ export default function ProfileCard() {
             Edit Profile
           </Button>
           <Button
-            onClick={() => { setPasswordError(""); setPasswordSuccess(""); setIsPasswordModalOpen(true); }}
+            onClick={() => {
+              setPasswordError("");
+              setPasswordSuccess("");
+              setIsPasswordModalOpen(true);
+            }}
             variant="outline"
             className="border border-primary/40 text-foreground hover:bg-muted/10 rounded-full transition-colors"
           >
@@ -198,9 +215,15 @@ export default function ProfileCard() {
             </DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-5 py-4">
+          <form
+            onSubmit={handlePasswordSubmit}
+            className="flex flex-col gap-5 py-4"
+          >
             <div className="flex flex-col gap-2">
-              <label htmlFor="currentPassword" className="text-sm font-semibold text-foreground">
+              <label
+                htmlFor="currentPassword"
+                className="text-sm font-semibold text-foreground"
+              >
                 Current Password
               </label>
               <input
@@ -215,7 +238,10 @@ export default function ProfileCard() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label htmlFor="newPassword" className="text-sm font-semibold text-foreground">
+              <label
+                htmlFor="newPassword"
+                className="text-sm font-semibold text-foreground"
+              >
                 New Password
               </label>
               <input
@@ -230,7 +256,10 @@ export default function ProfileCard() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label htmlFor="confirmPassword" className="text-sm font-semibold text-foreground">
+              <label
+                htmlFor="confirmPassword"
+                className="text-sm font-semibold text-foreground"
+              >
                 Confirm New Password
               </label>
               <input
@@ -245,10 +274,14 @@ export default function ProfileCard() {
             </div>
 
             {passwordError && (
-              <p className="text-sm text-red-600" role="alert">{passwordError}</p>
+              <p className="text-sm text-red-600" role="alert">
+                {passwordError}
+              </p>
             )}
             {passwordSuccess && (
-              <p className="text-sm text-green-600" role="status">{passwordSuccess}</p>
+              <p className="text-sm text-green-600" role="status">
+                {passwordSuccess}
+              </p>
             )}
 
             <DialogFooter className="mt-4 flex gap-2 sm:justify-end">

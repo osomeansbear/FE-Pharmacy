@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { createOrder } from "../../../../../api/orders.api";
+import { createOrder, payOrder } from "../../../../../api/orders.api";
 import { Address } from "../../../../../types/addressTypes";
 import { Cart } from "../../../../../types/cartItemTypes";
 import { PaymentMethod } from "../../../../../types/orderTypes";
@@ -47,6 +47,9 @@ export default function CheckoutView({
           quantity: item.quantity,
         })),
       });
+      if (paymentMethod === "ONLINE") {
+        await payOrder(order.id);
+      }
       router.push(`/users/payment/success?orderId=${order.id}`);
     } catch {
       setError("Unable to place order. Please try again.");

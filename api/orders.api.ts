@@ -46,6 +46,13 @@ export async function adminCreateOrder(
   return res.order;
 }
 
+export async function payOrder(orderId: number): Promise<OrderListType> {
+  const res = await axiosInstance.post<OrderResponse, OrderResponse>(
+    apiEndpoints.order.payOrder(orderId),
+  );
+  return res.order;
+}
+
 export async function cancelOrder(orderId: number): Promise<OrderListType> {
   const res = await axiosInstance.patch<OrderResponse, OrderResponse>(
     apiEndpoints.order.cancelOrder(orderId),
