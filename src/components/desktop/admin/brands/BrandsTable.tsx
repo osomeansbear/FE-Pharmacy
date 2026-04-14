@@ -18,15 +18,7 @@ import TablePageHeader from "../shared/TablePageHeader";
 import TablePagination from "../shared/TablePagination";
 import TableSearchBar from "../shared/TableSearchBar";
 import BrandFormModal, { BrandFormData } from "./BrandFormModal";
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/[\s_]+/g, "-")
-    .replace(/-+/g, "-");
-}
+import { slugify } from "@/lib/utils";
 
 const emptyForm: BrandFormData = {
   name: "",

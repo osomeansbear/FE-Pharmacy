@@ -1,17 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { slugify } from "@/lib/utils";
 import { AlertCircle, Loader2, X } from "lucide-react";
 import { Category } from "../../../../../types/categoryTypes";
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/[\s_]+/g, "-")
-    .replace(/-+/g, "-");
-}
 
 export interface CategoryFormData {
   name: string;
