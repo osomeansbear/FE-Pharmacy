@@ -195,13 +195,14 @@ export default function ChatPage() {
             onKeyDown={handleKeyDown}
             placeholder="Describe your symptoms..."
             disabled={isLoading}
-            className="w-full py-6 pr-12 bg-muted border-none rounded-full focus-visible:ring-1 focus-visible:ring-success text-foreground placeholder:text-muted-foreground"
+            className="w-full py-6 pr-12 bg-white border border-border rounded-full focus-visible:ring-1 focus-visible:ring-success text-black placeholder:text-muted-foreground"
           />
           <Button
+            variant="ghost"
             size="icon"
             onClick={handleSend}
             disabled={isLoading || !input.trim()}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-success justify-center"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-success hover:bg-transparent"
           >
             <Send />
           </Button>

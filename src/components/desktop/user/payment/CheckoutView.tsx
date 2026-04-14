@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createOrder, payOrder } from "../../../../../api/orders.api";
+import { useCartStore } from "../../../../../stores/cartStore";
 import { Address } from "../../../../../types/addressTypes";
 import { Cart } from "../../../../../types/cartItemTypes";
 import { PaymentMethod } from "../../../../../types/orderTypes";
@@ -27,6 +28,7 @@ export default function CheckoutView({
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("CASH");
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState("");
+  const setCartCount = useCartStore((s) => s.setCount);
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
 
@@ -50,6 +52,7 @@ export default function CheckoutView({
       if (paymentMethod === "ONLINE") {
         await payOrder(order.id);
       }
+      setCartCount(0);
       router.push(`/users/payment/success?orderId=${order.id}`);
     } catch {
       setError("Unable to place order. Please try again.");

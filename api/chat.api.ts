@@ -9,6 +9,7 @@ export async function sendChatMessage(
   const res = await axiosInstance.post<ChatResponse, ChatResponse>(
     apiEndpoints.chat.sendMessage,
     { message, history },
+    { timeout: 60000 },
   );
   return res;
 }

@@ -11,8 +11,11 @@ import {
   UserPlus,
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { fetchMyCart } from "../../../api/cart.api";
 import { useAuthStore } from "../../../stores/authStore";
+import { useCartStore } from "../../../stores/cartStore";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -20,6 +23,18 @@ export default function Navbar() {
   const isLoggedIn = useAuthStore((s) => s.isAuthenticated);
   const hasHydrated = useAuthStore((s) => s.hasHydrated);
   const isAdmin = user?.role === "ADMIN";
+  const cartCount = useCartStore((s) => s.count);
+  const setCartCount = useCartStore((s) => s.setCount);
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    fetchMyCart()
+      .then((cart) => {
+        const total = cart.items?.reduce((sum, i) => sum + Number(i.quantity), 0) ?? 0;
+        setCartCount(total);
+      })
+      .catch(() => {});
+  }, [isLoggedIn, setCartCount]);
 
   // Hide navbar only for admins (after hydration)
   if (hasHydrated && isAdmin) {
@@ -79,9 +94,11 @@ export default function Navbar() {
             className="relative hover:bg-success/5 text-success"
           >
             <ShoppingCart className="size-5" />
-            <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-              0
-            </span>
+            {cartCount > 0 && (
+              <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
           </Button>
         </Link>
 

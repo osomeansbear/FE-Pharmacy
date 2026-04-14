@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { MouseEvent, useState } from "react";
 import { addCartItem } from "../../../../api/cart.api";
 import { useAuthStore } from "../../../../stores/authStore";
+import { useCartStore } from "../../../../stores/cartStore";
 import { UnitType } from "../../../../types/orderTypes";
 import { Product } from "../../../../types/productTypes";
 
@@ -17,6 +18,7 @@ interface ProductCardProps {
 export default function ProductCard({ item }: ProductCardProps) {
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const increment = useCartStore((s) => s.increment);
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState("");
 
@@ -40,6 +42,7 @@ export default function ProductCard({ item }: ProductCardProps) {
         unitType: defaultUnitType,
         quantity: "1",
       });
+      increment();
     } catch {
       setError("Unable to add this product to cart.");
     } finally {
@@ -63,6 +66,7 @@ export default function ProductCard({ item }: ProductCardProps) {
         unitType: defaultUnitType,
         quantity: "1",
       });
+      increment();
       router.push("/users/cart");
     } catch {
       setError("Unable to process. Please try again.");
