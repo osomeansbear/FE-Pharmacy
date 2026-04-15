@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { fetchAdminStats, AdminStats } from "../../../../../api/admin.api";
 import {
   AlertTriangle,
   CheckCircle,
@@ -12,6 +10,8 @@ import {
   Users,
   XCircle,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { AdminStats, fetchAdminStats } from "../../../../../api/admin.api";
 
 function StatCard({
   label,
@@ -30,7 +30,9 @@ function StatCard({
     <div className="bg-white rounded-xl border border-border p-5 flex items-start gap-4">
       <div className={`p-2.5 rounded-lg ${accent}`}>{icon}</div>
       <div className="min-w-0">
-        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{label}</p>
+        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+          {label}
+        </p>
         <p className="text-2xl font-bold text-foreground mt-0.5">{value}</p>
         {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
       </div>
@@ -76,7 +78,10 @@ export default function DashboardStats() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bg-white rounded-xl border border-border p-5 h-24 animate-pulse bg-secondary/40" />
+          <div
+            key={i}
+            className="bg-white rounded-xl border border-border p-5 h-24 animate-pulse"
+          />
         ))}
       </div>
     );
@@ -134,7 +139,9 @@ export default function DashboardStats() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Orders by status */}
         <div className="bg-white rounded-xl border border-border p-5">
-          <h3 className="text-sm font-semibold text-foreground mb-3">Orders by Status</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-3">
+            Orders by Status
+          </h3>
           <OrderStatusRow
             label="Pending"
             count={stats.orders.byStatus.PENDING}
