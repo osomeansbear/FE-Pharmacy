@@ -98,7 +98,7 @@ export async function updateMyProfile(
   payload: UpdateUserPayload,
 ): Promise<User> {
   const res = await axiosInstance.patch<UpdateUserResponse, UpdateUserResponse>(
-    "users/profile",
+    apiEndpoints.user.updateMe,
     payload,
   );
   return res.user;

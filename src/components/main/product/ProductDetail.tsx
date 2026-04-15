@@ -1,11 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { formatVND } from "@/lib/utils";
+import { formatVND, toTitleCase } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { addCartItem } from "../../../../api/cart.api";
 import { useAuthStore } from "../../../../stores/authStore";
+import { useCartStore } from "../../../../stores/cartStore";
 import { ProductDetail as ProductDetailType } from "../../../../types/productTypes";
 
 interface ProductDetailProps {
@@ -15,6 +16,8 @@ interface ProductDetailProps {
 export default function ProductDetail({ product }: ProductDetailProps) {
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const cartCount = useCartStore((s) => s.count);
+  const setCartCount = useCartStore((s) => s.setCount);
   const [quantity, setQuantity] = useState(1);
   const [selectedUnitType, setSelectedUnitType] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -104,6 +107,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         quantity: String(quantity),
       });
 
+      setCartCount(cartCount + quantity);
       setSuccessMessage("Added to cart successfully.");
 
       if (redirectToCart) {
@@ -124,7 +128,14 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     { label: "Usage", value: product.usage },
     {
       label: "Composition",
-      value: product.composition ? JSON.stringify(product.composition) : null,
+      value: product.composition
+        ? typeof product.composition === "object" &&
+          !Array.isArray(product.composition)
+          ? Object.entries(product.composition as Record<string, unknown>)
+              .map(([k, v]) => `${k}: ${v}`)
+              .join("\n")
+          : JSON.stringify(product.composition, null, 2)
+        : null,
     },
     { label: "Indications", value: product.indications },
     { label: "Dosage Form", value: product.dosageForm },
@@ -170,7 +181,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
         <div className="flex w-full flex-col gap-4 md:w-1/2">
           <h1 className="text-2xl font-semibold text-success md:text-3xl">
-            {product.name}
+            {toTitleCase(product.name)}
           </h1>
 
           <div className="flex flex-wrap gap-3 text-sm text-slate-600">
@@ -305,20 +316,34 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       </div>
 
       <div className="rounded-lg bg-white p-5 md:p-8">
-        <h2 className="mb-4 text-xl font-semibold text-slate-900">
+        <h2 className="mb-6 text-xl font-semibold text-slate-900">
           Product Details
         </h2>
 
-        <div className="space-y-3 text-sm text-slate-700">
+        <div className="divide-y divide-slate-100">
           {detailRows.length ? (
             detailRows.map((row) => (
-              <div key={row.label}>
-                <p className="font-medium text-slate-900">{row.label}</p>
-                <p>{row.value}</p>
+              <div key={row.label} className="py-4 first:pt-0 last:pb-0">
+                <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  {row.label}
+                </p>
+                <div className="space-y-1 text-sm leading-relaxed text-slate-700">
+                  {String(row.value)
+                    .split("\n")
+                    .map((line, i) =>
+                      line.trim() ? (
+                        <p key={i}>{line}</p>
+                      ) : (
+                        <br key={i} />
+                      ),
+                    )}
+                </div>
               </div>
             ))
           ) : (
-            <p>No additional details available for this product.</p>
+            <p className="py-4 text-sm text-slate-500">
+              No additional details available for this product.
+            </p>
           )}
         </div>
 

@@ -5,6 +5,7 @@ export interface CartItem {
   userId: number;
   productId: number;
   productName: string;
+  productImage: string | null;
   unitType: UnitType;
   quantity: string;
   unitPrice: string;

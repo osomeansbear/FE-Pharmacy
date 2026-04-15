@@ -1,4 +1,7 @@
 const apiEndpoints = {
+  admin: {
+    getStats: "admin/stats",
+  },
   category: {
     getAllCategories: "categories",
     getCategoryById: (id: number) => `categories/${id}`,
@@ -8,6 +11,7 @@ const apiEndpoints = {
   },
   user: {
     getMe: "users/profile",
+    updateMe: "users/profile",
     getAllUsers: "users",
     getUserById: (id: number) => `users/detail/${id}`,
     updateUserById: (id: number) => `users/update/${id}`,
@@ -31,6 +35,13 @@ const apiEndpoints = {
     createProduct: "products",
     updateProduct: (id: number) => `products/${id}`,
     deleteProduct: (id: number) => `products/${id}`,
+    addUnit: (id: number) => `products/${id}/units`,
+    updateUnit: (id: number, unitId: number) => `products/${id}/units/${unitId}`,
+    deleteUnit: (id: number, unitId: number) => `products/${id}/units/${unitId}`,
+    createDetail: (id: number) => `products/${id}/detail`,
+    updateDetail: (id: number) => `products/${id}/detail`,
+    assignCategory: (id: number) => `products/${id}/categories`,
+    removeCategory: (id: number, categoryId: number) => `products/${id}/categories/${categoryId}`,
   },
   cart: {
     getMyCart: "cart",

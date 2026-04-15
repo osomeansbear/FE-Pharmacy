@@ -20,7 +20,6 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
 
-    // 1. Validate inputs
     if (
       !fullName ||
       !email ||
@@ -33,7 +32,6 @@ export default function RegisterPage() {
       return;
     }
 
-    // 2. Check password match
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -75,7 +73,6 @@ export default function RegisterPage() {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name Field */}
           <div>
             <label className="block text-sm font-medium mb-1">Full Name</label>
             <input
@@ -87,7 +84,6 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Email Field */}
           <div>
             <label className="block text-sm font-medium mb-1">Email</label>
             <input
@@ -121,7 +117,6 @@ export default function RegisterPage() {
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-success"
             />
           </div>
-          {/* Password Field */}
           <div>
             <label className="block text-sm font-medium mb-1">Password</label>
             <input
@@ -133,7 +128,6 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Confirm Password Field */}
           <div>
             <label className="block text-sm font-medium mb-1">
               Confirm Password
@@ -147,10 +141,8 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Error Message */}
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
@@ -164,7 +156,6 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        {/* Link to Login */}
         <div className="mt-4 text-center">
           <p className="text-sm text-muted-foreground">
             Already have an account?{" "}

@@ -48,6 +48,7 @@ export interface ItemType {
   id: number;
   productId: number;
   productName: string;
+  productImage: string | null;
   unitType: string;
   quantity: string | null;
   baseQty: string | null;

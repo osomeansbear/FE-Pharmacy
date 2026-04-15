@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { formatVND } from "@/lib/utils";
+import { formatVND, toTitleCase } from "@/lib/utils";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { CartItem as CartItemType } from "../../../../../types/cartItemTypes";
 
@@ -28,14 +28,14 @@ export default function CartItem({
         {/* Details */}
         <div className="w-24 h-24 ">
           <img
-            src="https://cdn.nhathuoclongchau.com.vn/unsafe/640x0/filters:quality(90):format(webp)/DSC_04874_6c29236c37.jpg"
+            src={item.productImage ?? "https://placehold.co/96x96?text=No+Image"}
             alt={item.productName}
-            className="rounded-xl"
+            className="rounded-xl w-full h-full object-cover"
           />
         </div>
         <div className="flex flex-col">
           <span className="text-sm text-info">{item.unitType}</span>
-          <span className="font-bold">{item.productName}</span>
+          <span className="font-bold">{toTitleCase(item.productName)}</span>
           <span className="text-emerald-700/90 font-bold">{formatVND(item.unitPrice)}</span>
         </div>
       </div>
@@ -46,7 +46,7 @@ export default function CartItem({
           <Button
             disabled={busy}
             onClick={() =>
-              onDecrease(item.id, String(Math.max(1, quantity - 1)))
+              onDecrease(item.id, String(quantity - 1))
             }
             className="bg-white text-primary border border-primary rounded-lg hover:bg-white hover:text-primary "
           >

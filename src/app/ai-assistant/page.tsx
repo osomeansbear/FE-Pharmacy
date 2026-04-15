@@ -28,8 +28,41 @@ function ProductCard({ product }: { product: ChatProduct }) {
   );
 }
 
+type Segment =
+  | { type: "list"; items: string[] }
+  | { type: "line"; text: string };
+
+function renderInline(text: string): React.ReactNode {
+  // Split on **bold** and _italic_ tokens
+  const tokens = text.split(/(\*\*.*?\*\*|_[^_]+_)/g);
+  return tokens.map((token, i) => {
+    if (token.startsWith("**") && token.endsWith("**") && token.length > 4)
+      return <strong key={i}>{token.slice(2, -2)}</strong>;
+    if (token.startsWith("_") && token.endsWith("_") && token.length > 2)
+      return <em key={i}>{token.slice(1, -1)}</em>;
+    return token;
+  });
+}
+
 function AssistantMessage({ msg }: { msg: ChatMessage }) {
   const lines = msg.content.split("\n");
+
+  // Group consecutive numbered-list lines into a single segment
+  const segments: Segment[] = [];
+  for (const line of lines) {
+    const listMatch = line.match(/^\d+\.\s+(.*)/);
+    if (listMatch) {
+      const last = segments[segments.length - 1];
+      if (last?.type === "list") {
+        last.items.push(listMatch[1]);
+      } else {
+        segments.push({ type: "list", items: [listMatch[1]] });
+      }
+    } else {
+      segments.push({ type: "line", text: line });
+    }
+  }
+
   return (
     <div className="flex items-start gap-3 max-w-[85%]">
       <div className="p-2 bg-success rounded-full text-white flex-shrink-0 mt-1">
@@ -37,15 +70,20 @@ function AssistantMessage({ msg }: { msg: ChatMessage }) {
       </div>
       <div className="space-y-2 flex-1">
         <div className="bg-white border border-border p-4 rounded-2xl rounded-tl-none text-sm text-foreground">
-          {lines.map((line, i) => {
-            if (!line.trim()) return <br key={i} />;
-            // Bold: **text**
-            const parts = line.split(/\*\*(.*?)\*\*/g);
+          {segments.map((seg, i) => {
+            if (seg.type === "list") {
+              return (
+                <ol key={i} className="list-decimal list-inside space-y-1 my-1 pl-2">
+                  {seg.items.map((item, j) => (
+                    <li key={j}>{renderInline(item)}</li>
+                  ))}
+                </ol>
+              );
+            }
+            if (!seg.text.trim()) return <br key={i} />;
             return (
               <p key={i} className="mb-1 last:mb-0">
-                {parts.map((part, j) =>
-                  j % 2 === 1 ? <strong key={j}>{part}</strong> : part,
-                )}
+                {renderInline(seg.text)}
               </p>
             );
           })}

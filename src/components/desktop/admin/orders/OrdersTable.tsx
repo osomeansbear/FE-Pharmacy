@@ -217,7 +217,7 @@ export default function OrdersTable() {
                         {displayStatus}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center">
                         <Button
                           variant="outline"

@@ -1,4 +1,4 @@
-import { formatVND } from "@/lib/utils";
+import { formatVND, toTitleCase } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
 import { CartItem } from "../../../../../types/cartItemTypes";
 
@@ -21,7 +21,7 @@ export default function OrderItemsPanel({ items }: OrderItemsPanelProps) {
             className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0"
           >
             <div className="flex flex-col">
-              <span className="font-semibold text-sm">{item.productName}</span>
+              <span className="font-semibold text-sm">{toTitleCase(item.productName)}</span>
               <span className="text-xs text-slate-500">{item.unitType}</span>
             </div>
             <div className="flex items-center gap-6 text-sm">

@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Mail, Pencil, Search, UserPlus, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Mail, Pencil, Search, UserPlus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   fetchAllUsers,
@@ -56,6 +56,7 @@ export default function UsersTable() {
       u.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentItems = filteredUsers.slice(startIndex, endIndex);
@@ -191,7 +192,7 @@ export default function UsersTable() {
                   <td className="px-6 py-4 text-muted-foreground">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="outline"
@@ -250,6 +251,37 @@ export default function UsersTable() {
                 ))}
               </select>
             </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === 1 || totalPages === 0}
+              onClick={() => setCurrentPage((p) => p - 1)}
+            >
+              <ChevronLeft size={16} />
+            </Button>
+            <div className="flex gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCurrentPage(page)}
+                  className={`h-8 w-8 p-0 ${currentPage === page ? "bg-success" : ""}`}
+                >
+                  {page}
+                </Button>
+              ))}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === totalPages || totalPages === 0}
+              onClick={() => setCurrentPage((p) => p + 1)}
+            >
+              <ChevronRight size={16} />
+            </Button>
           </div>
         </div>
       </div>

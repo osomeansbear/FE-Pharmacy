@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { formatVND } from "@/lib/utils";
+import { cn, formatVND, toTitleCase } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { MouseEvent, useState } from "react";
@@ -9,7 +9,7 @@ import { addCartItem } from "../../../../api/cart.api";
 import { useAuthStore } from "../../../../stores/authStore";
 import { useCartStore } from "../../../../stores/cartStore";
 import { UnitType } from "../../../../types/orderTypes";
-import { Product } from "../../../../types/productTypes";
+import { Product, ProductUnit } from "../../../../types/productTypes";
 
 interface ProductCardProps {
   item: Product;
@@ -23,8 +23,16 @@ export default function ProductCard({ item }: ProductCardProps) {
   const [error, setError] = useState("");
 
   const defaultUnit = item.units?.find((u) => u.isDefault) ?? item.units?.[0];
-  const defaultUnitType: UnitType = (defaultUnit?.unitType as UnitType) ?? "BOX";
-  const displayPrice = defaultUnit ? formatVND(defaultUnit.price) : "N/A";
+  const [selectedUnit, setSelectedUnit] = useState<ProductUnit | undefined>(defaultUnit);
+
+  const selectedUnitType: UnitType = (selectedUnit?.unitType as UnitType) ?? "BOX";
+  const displayPrice = selectedUnit ? formatVND(selectedUnit.price) : "N/A";
+
+  const handleUnitSelect = (event: MouseEvent<HTMLButtonElement>, unit: ProductUnit) => {
+    event.stopPropagation();
+    setSelectedUnit(unit);
+    setError("");
+  };
 
   const handleAddToCart = async (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -39,7 +47,7 @@ export default function ProductCard({ item }: ProductCardProps) {
       setAdding(true);
       await addCartItem({
         productId: item.id,
-        unitType: defaultUnitType,
+        unitType: selectedUnitType,
         quantity: "1",
       });
       increment();
@@ -63,7 +71,7 @@ export default function ProductCard({ item }: ProductCardProps) {
       setAdding(true);
       await addCartItem({
         productId: item.id,
-        unitType: defaultUnitType,
+        unitType: selectedUnitType,
         quantity: "1",
       });
       increment();
@@ -74,6 +82,8 @@ export default function ProductCard({ item }: ProductCardProps) {
       setAdding(false);
     }
   };
+
+  const availableUnits = item.units ?? [];
 
   return (
     <div
@@ -94,16 +104,32 @@ export default function ProductCard({ item }: ProductCardProps) {
             {item.brandName ?? ""}
           </span>
           <h3 className="text-lg font-bold text-slate-900 mt-1 leading-tight">
-            {item.name}
+            {toTitleCase(item.name)}
           </h3>
           <p className="text-slate-500 text-sm mt-2 line-clamp-2 flex-1">
             {item.shortDesc}
           </p>
         </div>
 
-        <div className="text-xs text-slate-400 mt-2">
-          {defaultUnit ? defaultUnit.unitType : ""}
-        </div>
+        {availableUnits.length > 0 && (
+          <div className="mt-3 flex gap-1.5 flex-wrap" onClick={(e) => e.stopPropagation()}>
+            {availableUnits.map((unit) => (
+              <button
+                key={unit.id}
+                onClick={(e) => handleUnitSelect(e, unit)}
+                className={cn(
+                  "px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-colors",
+                  selectedUnit?.id === unit.id
+                    ? "bg-success text-white border-success"
+                    : "bg-white text-slate-500 border-slate-200 hover:border-success hover:text-success"
+                )}
+              >
+                {unit.unitType}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="mt-4">
           <div className="flex justify-between items-end mb-3">
             <div>

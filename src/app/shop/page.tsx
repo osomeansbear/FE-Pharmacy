@@ -16,7 +16,6 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen">
-      {/* --- Hero Section --- */}
       <div className="w-full bg-success py-20 px-32 text-center text-white overflow-hidden rounded-b-[40px] ">
         <div className="max-w-3xl mx-auto space-y-6">
           <h1 className="text-6xl font-bold">PharmaCore</h1>
@@ -41,7 +40,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* --- Browse Categories --- */}
       <section className="py-16 px-6 md:px-20 lg:px-32 pb-20">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold text-slate-900">

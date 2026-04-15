@@ -70,7 +70,7 @@ export default function TablePagination({
               variant={currentPage === page ? "default" : "outline"}
               size="sm"
               onClick={() => onPageChange(page)}
-              className={`h-8 w-8 p-0 ${currentPage === page ? "bg-success" : ""}`}
+              className={`h-8 w-8 p-0 justify-center ${currentPage === page ? "bg-success" : ""}`}
             >
               {page}
             </Button>

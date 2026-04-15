@@ -7,10 +7,17 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchAllBrands } from "../../../../../api/brands.api";
 import { fetchAllCategories } from "../../../../../api/categories.api";
 import {
+  addProductUnit,
+  assignProductCategory,
   createProduct,
+  createProductDetail,
   deleteProduct,
+  deleteProductUnit,
   fetchAllProducts,
+  removeProductCategory,
   updateProduct,
+  updateProductDetail,
+  updateProductUnit,
 } from "../../../../../api/products.api";
 import { Brand } from "../../../../../types/brandTypes";
 import { Category } from "../../../../../types/categoryTypes";
@@ -19,8 +26,8 @@ import DeleteConfirmModal from "../shared/DeleteConfirmModal";
 import TablePageHeader from "../shared/TablePageHeader";
 import TablePagination from "../shared/TablePagination";
 import TableSearchBar from "../shared/TableSearchBar";
-import ProductFormModal, { ProductFormData } from "./ProductFormModal";
-import { slugify } from "@/lib/utils";
+import ProductFormModal, { ProductFormData, UnitFormData } from "./ProductFormModal";
+import { slugify, toTitleCase } from "@/lib/utils";
 
 const emptyForm: ProductFormData = {
   name: "",
@@ -32,6 +39,10 @@ const emptyForm: ProductFormData = {
   brandId: "",
   categoryIds: [],
   stock: 0,
+  units: [],
+  description: "",
+  usage: "",
+  ingredients: "",
 };
 
 export default function ProductsTable() {
@@ -51,6 +62,10 @@ export default function ProductsTable() {
   const [form, setForm] = useState<ProductFormData>(emptyForm);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
+
+  // track original state for edit-mode diff
+  const [originalCategoryIds, setOriginalCategoryIds] = useState<number[]>([]);
+  const [originalUnits, setOriginalUnits] = useState<UnitFormData[]>([]);
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
@@ -78,7 +93,7 @@ export default function ProductsTable() {
       setBrands(brandsData);
       setCategories(categoriesData);
     } catch {
-      // Keep dropdowns empty if loading fails.
+      // keep dropdowns empty if loading fails
     }
   }, []);
 
@@ -111,12 +126,23 @@ export default function ProductsTable() {
   const openCreateModal = () => {
     setForm(emptyForm);
     setEditingProductId(null);
+    setOriginalCategoryIds([]);
+    setOriginalUnits([]);
     setModalMode("create");
     setFormError("");
     setModalOpen(true);
   };
 
   const openEditModal = (product: Product) => {
+    const existingUnits: UnitFormData[] = (product.units ?? []).map((u) => ({
+      id: u.id,
+      unitType: u.unitType,
+      price: u.price,
+      conversionFactor: u.conversionFactor,
+      isDefault: u.isDefault,
+    }));
+    const existingCategoryIds = product.categoryIds ?? [];
+
     setForm({
       name: product.name,
       slug: product.slug,
@@ -125,9 +151,15 @@ export default function ProductsTable() {
       isActive: product.isActive,
       images: product.image.length > 0 ? [...product.image] : [""],
       brandId: product.brandId ? String(product.brandId) : "",
-      categoryIds: [],
+      categoryIds: [...existingCategoryIds],
       stock: product.stock,
+      units: existingUnits,
+      description: "",
+      usage: "",
+      ingredients: "",
     });
+    setOriginalCategoryIds(existingCategoryIds);
+    setOriginalUnits(existingUnits);
     setEditingProductId(product.id);
     setModalMode("edit");
     setFormError("");
@@ -181,6 +213,49 @@ export default function ProductsTable() {
     });
   };
 
+  const handleAddUnit = () => {
+    setForm((prev) => ({
+      ...prev,
+      units: [
+        ...prev.units,
+        {
+          unitType: "TABLET",
+          price: "",
+          conversionFactor: "1",
+          isDefault: prev.units.length === 0,
+        },
+      ],
+    }));
+  };
+
+  const handleRemoveUnit = (index: number) => {
+    setForm((prev) => {
+      const newUnits = prev.units.filter((_, i) => i !== index);
+      // ensure at least one default if any units remain
+      if (newUnits.length > 0 && !newUnits.some((u) => u.isDefault)) {
+        newUnits[0].isDefault = true;
+      }
+      return { ...prev, units: newUnits };
+    });
+  };
+
+  const handleUnitChange = (
+    index: number,
+    field: keyof UnitFormData,
+    value: string | boolean,
+  ) => {
+    setForm((prev) => {
+      const newUnits = prev.units.map((u, i) => {
+        if (i !== index) {
+          // clear isDefault on all others when one is set
+          return field === "isDefault" && value === true ? { ...u, isDefault: false } : u;
+        }
+        return { ...u, [field]: value };
+      });
+      return { ...prev, units: newUnits };
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
@@ -190,10 +265,24 @@ export default function ProductsTable() {
       return;
     }
 
+    // Validate units
+    for (const [idx, unit] of form.units.entries()) {
+      if (!unit.price.trim() || !/^\d{1,12}(\.\d{1,2})?$/.test(unit.price.trim())) {
+        setFormError(`Unit ${idx + 1}: price must be a positive number (e.g. 5000 or 5000.00).`);
+        return;
+      }
+      if (!unit.conversionFactor.trim() || !/^\d{1,12}(\.\d{1,4})?$/.test(unit.conversionFactor.trim())) {
+        setFormError(`Unit ${idx + 1}: conversion factor must be a positive number (e.g. 1 or 10.5).`);
+        return;
+      }
+    }
+    if (form.units.length > 0 && !form.units.some((u) => u.isDefault)) {
+      setFormError("At least one unit must be marked as default.");
+      return;
+    }
+
     const slug = form.slug.trim() || slugify(form.name);
-    const cleanImages = form.images
-      .map((img) => img.trim())
-      .filter((img) => img.length > 0);
+    const cleanImages = form.images.map((img) => img.trim()).filter(Boolean);
 
     const payload: Partial<Product> & { stock?: number } = {
       name: form.name.trim(),
@@ -206,20 +295,97 @@ export default function ProductsTable() {
       stock: form.stock,
     };
 
+    const hasDetail =
+      form.description.trim() || form.usage.trim() || form.ingredients.trim();
+
     try {
       setSubmitting(true);
+
       if (modalMode === "create") {
-        await createProduct(payload);
+        const newProduct = await createProduct(payload);
+        const productId = newProduct.id;
+
+        // assign categories
+        await Promise.all(
+          form.categoryIds.map((catId) => assignProductCategory(productId, catId)),
+        );
+
+        // add units sequentially (BE enforces single-default via transaction)
+        for (const unit of form.units) {
+          await addProductUnit(productId, {
+            unitType: unit.unitType,
+            price: unit.price.trim(),
+            conversionFactor: unit.conversionFactor.trim(),
+            isDefault: unit.isDefault,
+          });
+        }
+
+        // create detail if any field filled
+        if (hasDetail) {
+          await createProductDetail(productId, {
+            description: form.description.trim() || null,
+            usage: form.usage.trim() || null,
+            ingredients: form.ingredients.trim() || null,
+          });
+        }
       } else if (editingProductId !== null) {
         await updateProduct(editingProductId, payload);
+
+        // sync categories
+        const addedCats = form.categoryIds.filter((id) => !originalCategoryIds.includes(id));
+        const removedCats = originalCategoryIds.filter((id) => !form.categoryIds.includes(id));
+        await Promise.all([
+          ...addedCats.map((id) => assignProductCategory(editingProductId, id)),
+          ...removedCats.map((id) => removeProductCategory(editingProductId, id)),
+        ]);
+
+        // sync units
+        const removedUnits = originalUnits.filter(
+          (ou) => ou.id !== undefined && !form.units.find((u) => u.id === ou.id),
+        );
+        const newUnits = form.units.filter((u) => u.id === undefined);
+        const updatedUnits = form.units.filter((u) => u.id !== undefined);
+
+        await Promise.all(
+          removedUnits.map((u) => deleteProductUnit(editingProductId, u.id!)),
+        );
+        for (const unit of newUnits) {
+          await addProductUnit(editingProductId, {
+            unitType: unit.unitType,
+            price: unit.price.trim(),
+            conversionFactor: unit.conversionFactor.trim(),
+            isDefault: unit.isDefault,
+          });
+        }
+        await Promise.all(
+          updatedUnits.map((u) =>
+            updateProductUnit(editingProductId, u.id!, {
+              price: u.price.trim(),
+              conversionFactor: u.conversionFactor.trim(),
+              isDefault: u.isDefault,
+            }),
+          ),
+        );
+
+        // update detail if any field filled
+        if (hasDetail) {
+          await updateProductDetail(editingProductId, {
+            description: form.description.trim() || null,
+            usage: form.usage.trim() || null,
+            ingredients: form.ingredients.trim() || null,
+          });
+        }
       }
+
       closeModal();
       await loadProducts();
-    } catch {
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "An unexpected error occurred.";
       setFormError(
         modalMode === "create"
-          ? "Failed to create product. Please try again."
-          : "Failed to update product. Please try again.",
+          ? `Failed to create product: ${msg}`
+          : `Failed to update product: ${msg}`,
       );
     } finally {
       setSubmitting(false);
@@ -300,7 +466,7 @@ export default function ProductsTable() {
               ? currentItems.map((product) => (
                   <tr key={product.id} className="hover:bg-secondary/50 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-foreground">{product.name}</div>
+                      <div className="font-semibold text-foreground">{toTitleCase(product.name)}</div>
                     </td>
                     <td className="px-6 py-4 text-muted-foreground">
                       {product.brandName || getBrandName(product.brandId)}
@@ -310,7 +476,7 @@ export default function ProductsTable() {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className={product.stock < 50 ? "text-red-500 font-bold" : ""}>
-                        {product.stock} units
+                        {product.stock}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -319,13 +485,15 @@ export default function ProductsTable() {
                       </Badge>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-1.5 text-success">
+                      <div className="flex items-center gap-1.5">
                         <div
                           className={`h-2 w-2 rounded-full ${
                             product.isActive ? "bg-success" : "bg-muted-foreground"
                           }`}
                         />
-                        {product.isActive ? "Active" : "Inactive"}
+                        <span className={product.isActive ? "text-success" : "text-muted-foreground"}>
+                          {product.isActive ? "Active" : "Inactive"}
+                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-center">
@@ -388,6 +556,9 @@ export default function ProductsTable() {
         onAddImage={addImageField}
         onRemoveImage={removeImageField}
         onToggleCategory={toggleCategory}
+        onAddUnit={handleAddUnit}
+        onRemoveUnit={handleRemoveUnit}
+        onUnitChange={handleUnitChange}
         onSubmit={handleSubmit}
         onClose={closeModal}
       />

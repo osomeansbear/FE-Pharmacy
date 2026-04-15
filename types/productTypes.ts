@@ -15,6 +15,7 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
   units?: ProductUnit[];
+  categoryIds?: number[];
 }
 
 export interface ProductDetail extends Product {

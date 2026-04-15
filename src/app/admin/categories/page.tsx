@@ -2,13 +2,8 @@ import CategoriesTable from "../../../components/desktop/admin/categories/Catego
 
 export default function CategoriesPage() {
   return (
-    <>
-      {/* Desktop */}
-      <div className="hidden md:block">
-        <CategoriesTable />
-      </div>
-      {/* Mobile placeholder */}
-      <div className="block md:hidden"></div>
-    </>
+    <div className="hidden md:block">
+      <CategoriesTable />
+    </div>
   );
 }

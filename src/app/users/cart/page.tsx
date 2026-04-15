@@ -11,10 +11,17 @@ import {
   updateCartItem,
 } from "../../../../api/cart.api";
 import { useAuthStore } from "../../../../stores/authStore";
+import { useCartStore } from "../../../../stores/cartStore";
 import { Cart } from "../../../../types/cartItemTypes";
 
 export default function CartPage() {
   const user = useAuthStore((state) => state.user);
+  const setCartCount = useCartStore((s) => s.setCount);
+
+  const syncCount = (updatedCart: Cart) => {
+    const total = updatedCart.items.reduce((sum, i) => sum + Number(i.quantity), 0);
+    setCartCount(total);
+  };
   const router = useRouter();
   const [cart, setCart] = useState<Cart>({ items: [], totalAmount: "0" });
   const [loading, setLoading] = useState(true);
@@ -44,6 +51,7 @@ export default function CartPage() {
     try {
       const nextCart = await updateCartItem(itemId, { quantity: nextQty });
       setCart(nextCart);
+      syncCount(nextCart);
     } catch {
       setError("Unable to update quantity.");
     } finally {
@@ -55,12 +63,14 @@ export default function CartPage() {
     setBusyItemId(itemId);
     setError("");
     try {
-      if (Number(nextQty) <= 1) {
+      if (Number(nextQty) <= 0) {
         const nextCart = await removeCartItem(itemId);
         setCart(nextCart);
+        syncCount(nextCart);
       } else {
         const nextCart = await updateCartItem(itemId, { quantity: nextQty });
         setCart(nextCart);
+        syncCount(nextCart);
       }
     } catch {
       setError("Unable to update quantity.");
@@ -75,6 +85,7 @@ export default function CartPage() {
     try {
       const nextCart = await removeCartItem(itemId);
       setCart(nextCart);
+      syncCount(nextCart);
     } catch {
       setError("Unable to remove item.");
     } finally {
