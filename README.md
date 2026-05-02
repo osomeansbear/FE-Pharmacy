@@ -1,6 +1,6 @@
 # FE-Pharmacy
 
-Next.js 15 frontend for the Smart Pharmacy Application. Provides the patient-facing shop, cart, and MediGenius AI consultation interface, as well as the admin dashboard for catalogue and order management.
+Next.js 15 frontend for the Smart Pharmacy Application. Provides the patient-facing shop, cart, and MediBot AI consultation interface, as well as the admin dashboard for catalogue and order management.
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ FE-Pharmacy/
 │   │   ├── users/          # Patient pages (cart, orders, profile, health profile)
 │   │   ├── shop/           # Public shop landing page
 │   │   ├── products/       # Public product listing and detail pages
-│   │   ├── ai-assistant/   # MediGenius chat interface
+│   │   ├── ai-assistant/   # MediBot chat interface
 │   │   ├── login/          # Login page
 │   │   └── register/       # Registration page
 │   ├── components/
@@ -73,18 +73,21 @@ pnpm lint     # Run ESLint
 Both servers must be running at the same time. Open two terminals:
 
 **Terminal 1 (backend):**
+
 ```bash
 cd BE-Pharmacy
 npm run dev
 ```
 
 **Terminal 2 (frontend):**
+
 ```bash
 cd FE-Pharmacy
 pnpm dev
 ```
 
-If MediGenius LLM responses are needed, Ollama must also be running:
+If MediBot LLM responses are needed, Ollama must also be running:
+
 ```bash
 ollama serve
 ```
@@ -93,31 +96,31 @@ Then open `http://localhost:3000` in a browser.
 
 ## Demo Credentials
 
-| Role | Email | Password |
-| ---- | ----- | -------- |
-| Admin | admin@demo.local | Admin@123 |
+| Role    | Email              | Password    |
+| ------- | ------------------ | ----------- |
+| Admin   | admin@demo.local   | Admin@123   |
 | Patient | patient@demo.local | Patient@123 |
 
 Accounts are created by the BE-Pharmacy seed scripts. See the BE-Pharmacy README for seeding instructions.
 
 ## Route Overview
 
-| Path | Access | Description |
-| ---- | ------ | ----------- |
-| `/shop` | Public | Product landing page |
-| `/products` | Public | Product listing with filters |
-| `/products/:slug` | Public | Product detail page |
-| `/login` | Public | Login form |
-| `/register` | Public | Registration form |
-| `/ai-assistant` | Public (limited) / Patient | MediGenius chat |
-| `/users/cart` | Patient | Cart and checkout |
-| `/users/profile` | Patient | Account settings |
-| `/users/profile/health` | Patient | Allergy and health profile |
-| `/users/profile/orders` | Patient | Order history |
-| `/admin` | Admin | Dashboard |
-| `/admin/products` | Admin | Product management |
-| `/admin/orders` | Admin | Order management |
-| `/admin/users` | Admin | User management |
+| Path                    | Access                     | Description                  |
+| ----------------------- | -------------------------- | ---------------------------- |
+| `/shop`                 | Public                     | Product landing page         |
+| `/products`             | Public                     | Product listing with filters |
+| `/products/:slug`       | Public                     | Product detail page          |
+| `/login`                | Public                     | Login form                   |
+| `/register`             | Public                     | Registration form            |
+| `/ai-assistant`         | Public (limited) / Patient | MediBot chat                 |
+| `/users/cart`           | Patient                    | Cart and checkout            |
+| `/users/profile`        | Patient                    | Account settings             |
+| `/users/profile/health` | Patient                    | Allergy and health profile   |
+| `/users/profile/orders` | Patient                    | Order history                |
+| `/admin`                | Admin                      | Dashboard                    |
+| `/admin/products`       | Admin                      | Product management           |
+| `/admin/orders`         | Admin                      | Order management             |
+| `/admin/users`          | Admin                      | User management              |
 
 ## Architecture Notes
 
