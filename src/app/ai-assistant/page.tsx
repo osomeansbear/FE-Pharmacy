@@ -73,7 +73,10 @@ function AssistantMessage({ msg }: { msg: ChatMessage }) {
           {segments.map((seg, i) => {
             if (seg.type === "list") {
               return (
-                <ol key={i} className="list-decimal list-inside space-y-1 my-1 pl-2">
+                <ol
+                  key={i}
+                  className="list-decimal list-inside space-y-1 my-1 pl-2"
+                >
                   {seg.items.map((item, j) => (
                     <li key={j}>{renderInline(item)}</li>
                   ))}
@@ -119,7 +122,7 @@ export default function ChatPage() {
     {
       role: "assistant",
       content:
-        "Hello! I'm MediGenius, your pharmacy assistant. I can help you find non-prescription medications for common symptoms like headaches, colds, allergies, stomach issues, and more. What symptoms are you experiencing?",
+        "Hello! I'm MediBot, your pharmacy assistant. I can help you find non-prescription medications for common symptoms like headaches, colds, allergies, stomach issues, and more. What symptoms are you experiencing?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -181,7 +184,7 @@ export default function ChatPage() {
             <Bot className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="font-semibold text-lg">MediGenius</h1>
+            <h1 className="font-semibold text-lg">MediBot</h1>
             <p className="text-xs opacity-80">Pharmacy Assistant</p>
           </div>
         </div>
